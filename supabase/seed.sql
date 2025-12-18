@@ -1,0 +1,111 @@
+-- ==========================================
+-- DETRADES JOURNAL - SEED DATA SCRIPT
+-- ==========================================
+-- Run this AFTER setup.sql and AFTER creating users
+-- Replace the UUIDs with actual user IDs from your auth.users table
+
+-- Get user IDs first:
+-- SELECT id, email FROM auth.users;
+
+-- Example: Insert sample profiles (if not auto-created)
+-- UPDATE profiles SET username = 'mentor_john', role = 'mentor' WHERE id = 'YOUR_MENTOR_UUID';
+-- UPDATE profiles SET username = 'trader_alice' WHERE id = 'YOUR_MEMBER_UUID';
+
+-- ==========================================
+-- SAMPLE TRADES DATA
+-- ==========================================
+-- Replace 'YOUR_USER_UUID' with actual user ID
+
+-- INSERT INTO trades (
+--   user_id, trade_date, session, pair, bias, bias_daily, framework,
+--   profiling, entry_model, result, rr, mood, image_url, description, tags
+-- ) VALUES
+-- -- Win trade example
+-- (
+--   'YOUR_USER_UUID',
+--   CURRENT_DATE - INTERVAL '1 day',
+--   'London',
+--   'NQ',
+--   'Bullish',
+--   'DNT',
+--   'IRL to ERL',
+--   '6AM Reversal',
+--   'Entry Model 1 (DNT)',
+--   'Win',
+--   2.50,
+--   'Calm',
+--   'https://via.placeholder.com/800x600?text=Trade+Screenshot',
+--   'Clean reversal setup. Entry sesuai plan.',
+--   ARRAY['A+Setup', 'CleanEntry']
+-- ),
+-- -- Loss trade example
+-- (
+--   'YOUR_USER_UUID',
+--   CURRENT_DATE - INTERVAL '2 days',
+--   'New York',
+--   'XAU',
+--   'Bearish',
+--   'DCM',
+--   'OPR',
+--   '10AM Continuation',
+--   'Entry Model 1 (DCM)',
+--   'Lose',
+--   -1.00,
+--   'Anxious',
+--   'https://via.placeholder.com/800x600?text=Trade+Screenshot+2',
+--   'Entry terlalu cepat sebelum konfirmasi.',
+--   ARRAY['FOMO']
+-- ),
+-- -- Another win
+-- (
+--   'YOUR_USER_UUID',
+--   CURRENT_DATE,
+--   'London',
+--   'EU',
+--   'Bullish',
+--   'DFM',
+--   'OB to Liq',
+--   '6AM Continuation',
+--   'Entry Model 2 (DCM)',
+--   'Win',
+--   3.00,
+--   'Calm',
+--   'https://via.placeholder.com/800x600?text=Trade+Screenshot+3',
+--   'Perfect execution.',
+--   ARRAY['A+Setup', 'PerfectExec']
+-- );
+
+-- ==========================================
+-- QUICK COMMANDS FOR TESTING
+-- ==========================================
+
+-- View all profiles:
+-- SELECT * FROM profiles;
+
+-- View all trades:
+-- SELECT * FROM trades ORDER BY created_at DESC;
+
+-- Set someone as mentor:
+-- UPDATE profiles SET role = 'mentor' WHERE username = 'mentor_name';
+
+-- View trades with profile info:
+-- SELECT t.*, p.username FROM trades t JOIN profiles p ON t.user_id = p.id;
+
+-- Check daily RR for a user:
+-- SELECT user_id, SUM(rr) as daily_rr 
+-- FROM trades 
+-- WHERE trade_date = CURRENT_DATE 
+-- GROUP BY user_id;
+
+-- Get leaderboard:
+-- SELECT 
+--   p.username,
+--   COUNT(t.id) as total_trades,
+--   SUM(CASE WHEN t.result = 'Win' THEN 1 ELSE 0 END) as wins,
+--   ROUND(AVG(CASE WHEN t.result = 'Win' THEN 1.0 ELSE 0.0 END) * 100, 1) as winrate,
+--   SUM(t.rr) as total_rr
+-- FROM profiles p
+-- LEFT JOIN trades t ON p.id = t.user_id
+-- WHERE p.role = 'member'
+-- GROUP BY p.id, p.username
+-- ORDER BY total_rr DESC;
