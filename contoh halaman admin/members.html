@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Roster - Detrades Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    colors: {
+                        zinc: { 850: '#1f1f22', 900: '#18181b', 950: '#09090b' },
+                        indigo: { 500: '#6366f1' },
+                        emerald: { 500: '#10b981' },
+                        amber: { 500: '#f59e0b' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #09090b;
+            color: #e4e4e7;
+        }
+    </style>
+</head>
+
+<body class="flex h-screen overflow-hidden antialiased selection:bg-amber-500/30">
+
+    <!-- SIDEBAR (MENTOR VERSION) -->
+    <aside class="w-64 bg-zinc-950 border-r border-zinc-800 flex flex-col fixed inset-y-0 z-50">
+        <div class="h-16 flex items-center px-6 border-b border-zinc-800">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-6 h-6 bg-amber-500 rounded flex items-center justify-center text-zinc-900 font-bold text-xs font-mono">
+                    M</div>
+                <span class="font-bold tracking-wider text-white">MENTOR</span>
+                <span class="text-[10px] font-mono bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-400">ADMIN</span>
+            </div>
+        </div>
+
+        <nav class="flex-1 px-3 py-6 space-y-6 overflow-y-auto">
+            <div>
+                <p class="px-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">My Stats</p>
+                <div class="space-y-1">
+                    <a href="index.html"
+                        class="group flex items-center gap-3 px-3 py-2 text-sm font-medium text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100 rounded-md transition-all">
+                        <i class="ph ph-user text-lg"></i> My Dashboard
+                    </a>
+                </div>
+            </div>
+            <div>
+                <p class="px-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Team Management</p>
+                <div class="space-y-1">
+                    <a href="admin-dashboard.html"
+                        class="group flex items-center gap-3 px-3 py-2 text-sm font-medium text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100 rounded-md transition-all">
+                        <i class="ph ph-binoculars text-lg"></i> God View
+                    </a>
+                    <a href="review-queue.html"
+                        class="group flex items-center gap-3 px-3 py-2 text-sm font-medium text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100 rounded-md transition-all">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="flex items-center gap-3"><i class="ph ph-list-checks text-lg"></i> Review
+                                Queue</span>
+                            <span
+                                class="bg-indigo-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">5</span>
+                        </div>
+                    </a>
+                    <a href="#"
+                        class="group flex items-center gap-3 px-3 py-2 text-sm font-medium bg-zinc-900 text-amber-500 border-l-2 border-amber-500 rounded-r-md">
+                        <i class="ph ph-users-three text-lg"></i> Members
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 ml-64 overflow-y-auto">
+        <div class="max-w-7xl mx-auto p-8 space-y-8">
+
+            <!-- HEADER -->
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-white tracking-tight">Team Roster</h1>
+                    <p class="text-sm text-zinc-400">Manage access and account details.</p>
+                </div>
+                <button onclick="document.getElementById('addMemberModal').classList.remove('hidden')"
+                    class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg shadow-indigo-500/20 transition-all flex items-center gap-2">
+                    <i class="ph ph-user-plus"></i> Add New Member
+                </button>
+            </div>
+
+            <!-- MEMBER TABLE -->
+            <div class="border border-zinc-800 rounded-xl overflow-hidden bg-zinc-900/30">
+                <!-- Toolbar -->
+                <div class="px-6 py-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50">
+                    <div class="relative">
+                        <i class="ph ph-magnifying-glass absolute left-3 top-2.5 text-zinc-500"></i>
+                        <input type="text" placeholder="Search by name or email..."
+                            class="bg-zinc-950 border border-zinc-800 rounded pl-9 pr-3 py-1.5 text-sm text-white focus:border-indigo-500 outline-none w-64">
+                    </div>
+                    <div class="text-xs text-zinc-500">
+                        Total: <span class="text-white font-bold">12 Active</span>
+                    </div>
+                </div>
+
+                <table class="w-full text-left">
+                    <thead class="bg-zinc-900/50 text-xs uppercase text-zinc-500 font-medium">
+                        <tr>
+                            <th class="px-6 py-3">User Profile</th>
+                            <th class="px-6 py-3">Role</th>
+                            <th class="px-6 py-3">Joined Date</th>
+                            <th class="px-6 py-3 text-center">Status</th>
+                            <th class="px-6 py-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-zinc-800/50 text-sm">
+
+                        <!-- ROW 1 -->
+                        <tr class="hover:bg-zinc-900/50 transition-colors group">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500">
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-white">Alpha_One</p>
+                                        <p class="text-xs text-zinc-500">alpha@detrades.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-zinc-300">Trader</td>
+                            <td class="px-6 py-4 text-zinc-500 font-mono text-xs">Jan 12, 2024</td>
+                            <td class="px-6 py-4 text-center">
+                                <span
+                                    class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                                    ACTIVE
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <button onclick="alert('Reset Password Link Sent!')"
+                                    class="text-zinc-500 hover:text-indigo-400 text-xs underline mr-3">Reset
+                                    Pass</button>
+                                <button class="text-zinc-500 hover:text-rose-500"><i class="ph ph-trash"></i></button>
+                            </td>
+                        </tr>
+
+                        <!-- ROW 2 -->
+                        <tr class="hover:bg-zinc-900/50 transition-colors group">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500">
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-white">Mentor_Dave</p>
+                                        <p class="text-xs text-zinc-500">dave@detrades.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-amber-500 font-bold flex items-center gap-1"><i
+                                    class="ph-fill ph-crown"></i> Admin</td>
+                            <td class="px-6 py-4 text-zinc-500 font-mono text-xs">Founder</td>
+                            <td class="px-6 py-4 text-center">
+                                <span
+                                    class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                                    ACTIVE
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <!-- Admin cannot be deleted easily -->
+                                <span class="text-zinc-700 text-xs">--</span>
+                            </td>
+                        </tr>
+
+                        <!-- ROW 3 (Suspended) -->
+                        <tr class="hover:bg-zinc-900/50 transition-colors group opacity-70">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-zinc-700"></div>
+                                    <div>
+                                        <p class="font-bold text-zinc-400">Ex_Member</p>
+                                        <p class="text-xs text-zinc-600">ex@detrades.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-zinc-500">Trader</td>
+                            <td class="px-6 py-4 text-zinc-500 font-mono text-xs">Feb 01, 2024</td>
+                            <td class="px-6 py-4 text-center">
+                                <span
+                                    class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold bg-zinc-800 text-zinc-500 border border-zinc-700">
+                                    SUSPENDED
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <button
+                                    class="text-zinc-500 hover:text-emerald-500 text-xs underline">Re-Activate</button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL ADD MEMBER (Simple Overlay) -->
+    <div id="addMemberModal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] hidden flex items-center justify-center">
+        <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-xl w-full max-w-md shadow-2xl relative">
+            <button onclick="document.getElementById('addMemberModal').classList.add('hidden')"
+                class="absolute top-4 right-4 text-zinc-500 hover:text-white">
+                <i class="ph ph-x text-lg"></i>
+            </button>
+
+            <h2 class="text-lg font-bold text-white mb-1">Add New Trader</h2>
+            <p class="text-xs text-zinc-500 mb-6">Create a new account for your team member.</p>
+
+            <form class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-xs font-medium text-zinc-400">Full Name / Username</label>
+                    <input type="text"
+                        class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-sm text-white focus:border-indigo-500 outline-none"
+                        placeholder="e.g. John_Trade">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-medium text-zinc-400">Email Address</label>
+                    <input type="email"
+                        class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-sm text-white focus:border-indigo-500 outline-none"
+                        placeholder="e.g. john@detrades.com">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-medium text-zinc-400">Initial Password</label>
+                    <input type="text"
+                        class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-sm text-white focus:border-indigo-500 outline-none font-mono"
+                        value="Detrades2024!" readonly>
+                    <p class="text-[10px] text-zinc-600">Member must change this upon first login.</p>
+                </div>
+
+                <div class="pt-4 flex gap-3">
+                    <button type="button" onclick="document.getElementById('addMemberModal').classList.add('hidden')"
+                        class="flex-1 px-4 py-2 border border-zinc-700 hover:bg-zinc-800 text-zinc-300 rounded text-sm font-medium">Cancel</button>
+                    <button type="button"
+                        onclick="alert('Member Created!'); document.getElementById('addMemberModal').classList.add('hidden')"
+                        class="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-sm font-medium">Create
+                        Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>
