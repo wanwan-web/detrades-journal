@@ -10,11 +10,13 @@ export default async function SettingsPage() {
         redirect('/login')
     }
 
-    const { data: profile } = await supabase
+    const { data: profileData } = await supabase
         .from('profiles')
         .select('username, role')
         .eq('id', user.id)
         .single()
+
+    const profile = profileData as { username: string | null; role: string } | null
 
     return <SettingsClient user={user} profile={profile} />
 }

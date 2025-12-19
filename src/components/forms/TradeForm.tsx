@@ -37,21 +37,35 @@ import Image from 'next/image'
 
 const tradeSchema = z.object({
     trade_date: z.string().min(1, 'Tanggal wajib diisi'),
-    session: z.enum(SESSION_TYPES as unknown as [string, ...string[]]),
-    pair: z.enum(PAIR_TYPES as unknown as [string, ...string[]]),
-    bias: z.enum(BIAS_TYPES as unknown as [string, ...string[]]),
-    bias_daily: z.enum(BIAS_DAILY_TYPES as unknown as [string, ...string[]]),
-    framework: z.enum(FRAMEWORK_TYPES as unknown as [string, ...string[]]),
-    profiling: z.enum(PROFILING_TYPES as unknown as [string, ...string[]]),
+    session: z.string().min(1, 'Session wajib dipilih'),
+    pair: z.string().min(1, 'Pair wajib dipilih'),
+    bias: z.string().min(1, 'Bias wajib dipilih'),
+    bias_daily: z.string().min(1, 'Bias daily wajib dipilih'),
+    framework: z.string().min(1, 'Framework wajib dipilih'),
+    profiling: z.string().min(1, 'Profiling wajib dipilih'),
     entry_model: z.string().min(1, 'Entry model wajib dipilih'),
-    result: z.enum(RESULT_TYPES as unknown as [string, ...string[]]),
-    rr: z.string().min(1, 'RR wajib diisi').transform((val) => parseFloat(val)),
-    mood: z.enum(MOOD_TYPES as unknown as [string, ...string[]]),
+    result: z.string().min(1, 'Result wajib dipilih'),
+    rr: z.string().min(1, 'RR wajib diisi'),
+    mood: z.string().min(1, 'Mood wajib dipilih'),
     description: z.string().optional(),
     tags: z.string().optional(),
 })
 
-type TradeFormData = z.input<typeof tradeSchema>
+type TradeFormData = {
+    trade_date: string
+    session: string
+    pair: string
+    bias: string
+    bias_daily: string
+    framework: string
+    profiling: string
+    entry_model: string
+    result: string
+    rr: string
+    mood: string
+    description?: string
+    tags?: string
+}
 
 interface TradeFormProps {
     userId: string
@@ -169,6 +183,7 @@ export default function TradeForm({ userId, isLocked = false }: TradeFormProps) 
                 ? data.tags.split(',').map(t => t.trim()).filter(Boolean)
                 : null
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const { error } = await supabase.from('trades').insert({
                 user_id: userId,
                 trade_date: data.trade_date,
@@ -180,14 +195,14 @@ export default function TradeForm({ userId, isLocked = false }: TradeFormProps) 
                 profiling: data.profiling,
                 entry_model: data.entry_model,
                 result: data.result,
-                rr: typeof data.rr === 'string' ? parseFloat(data.rr) : data.rr,
+                rr: parseFloat(data.rr),
                 mood: data.mood,
                 image_url: imageUrl,
                 description: data.description || null,
                 tags,
                 status: 'submitted',
                 is_reviewed: false,
-            })
+            } as never)
 
             if (error) throw error
 
