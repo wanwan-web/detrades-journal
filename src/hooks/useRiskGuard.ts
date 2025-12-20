@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { getTodayRisk } from '@/lib/queries';
 import { useUser } from './useUser';
-import { getNewYorkDate, getTimeUntilNYMidnight } from '@/lib/date-utils';
+import { getTimeUntilNYMidnight } from '@/lib/date-utils';
 
 interface RiskGuardState {
     currentR: number;
@@ -15,7 +15,7 @@ interface RiskGuardState {
 }
 
 export function useRiskGuard(): RiskGuardState {
-    const { user } = useUser();
+    const { user, isLoading: userLoading } = useUser();
     const [currentR, setCurrentR] = useState(0);
     const [isLocked, setIsLocked] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -27,11 +27,19 @@ export function useRiskGuard(): RiskGuardState {
             return;
         }
 
-        setIsLoading(true);
-        const risk = await getTodayRisk(user.id);
-        setCurrentR(risk.totalR);
-        setIsLocked(risk.isLocked);
-        setIsLoading(false);
+        try {
+            setIsLoading(true);
+            const risk = await getTodayRisk(user.id);
+            setCurrentR(risk.totalR);
+            setIsLocked(risk.isLocked);
+        } catch (error) {
+            console.error('Error fetching risk:', error);
+            // On error, reset to safe defaults
+            setCurrentR(0);
+            setIsLocked(false);
+        } finally {
+            setIsLoading(false);
+        }
     }, [user]);
 
     // Update reset timer
@@ -48,8 +56,22 @@ export function useRiskGuard(): RiskGuardState {
 
     // Fetch risk on mount and user change
     useEffect(() => {
-        fetchRisk();
-    }, [fetchRisk]);
+        if (!userLoading) {
+            fetchRisk();
+        }
+    }, [fetchRisk, userLoading]);
+
+    // Handle visibility change - refresh risk when tab becomes visible
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible' && user) {
+                fetchRisk();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [fetchRisk, user]);
 
     // Calculate percentage (0R = 0%, -2R = 100%)
     const percentage = currentR < 0 ? Math.min((Math.abs(currentR) / 2) * 100, 100) : 0;
@@ -57,7 +79,7 @@ export function useRiskGuard(): RiskGuardState {
     return {
         currentR,
         isLocked,
-        isLoading,
+        isLoading: isLoading || userLoading,
         resetTimer,
         percentage,
         refresh: fetchRisk,
