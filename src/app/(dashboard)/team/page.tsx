@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Trophy, BookOpen, Crown, Medal, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,66 +13,37 @@ export default function TeamHubPage() {
     const [activeTab, setActiveTab] = useState<"leaderboard" | "playbook">("leaderboard");
     const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
     const [bestTrades, setBestTrades] = useState<TradeWithProfile[]>([]);
-    const [isFirstLoad, setIsFirstLoad] = useState(true);
+    const [dataLoaded, setDataLoaded] = useState(false);
 
-    const isFetchingRef = useRef(false);
-    const isInitializedRef = useRef(false);
-
-    // Initial load
+    // Initial load - Team Hub doesn't need user context
     useEffect(() => {
-        if (isInitializedRef.current) return;
+        if (dataLoaded) return;
 
-        isInitializedRef.current = true;
-        isFetchingRef.current = true;
+        let cancelled = false;
 
         Promise.all([
             getLeaderboard(),
             getAllTrades(20),
         ])
             .then(([leaders, trades]) => {
-                setLeaderboard(leaders);
-                setBestTrades(trades.filter(t => t.result === 'Win' && t.mentor_score && t.mentor_score >= 4).slice(0, 9));
+                if (!cancelled) {
+                    setLeaderboard(leaders);
+                    setBestTrades(trades.filter(t => t.result === 'Win' && t.mentor_score && t.mentor_score >= 4).slice(0, 9));
+                    setDataLoaded(true);
+                }
             })
             .catch((error) => {
                 console.error('Error loading team data:', error);
-            })
-            .finally(() => {
-                setIsFirstLoad(false);
-                isFetchingRef.current = false;
+                if (!cancelled) setDataLoaded(true);
             });
-    }, []);
 
-    // Visibility change - silent refetch
-    useEffect(() => {
-        const handleVisibilityChange = () => {
-            if (document.visibilityState !== 'visible') return;
-            if (!isInitializedRef.current) return;
-            if (isFetchingRef.current) return;
-
-            isFetchingRef.current = true;
-            Promise.all([
-                getLeaderboard(),
-                getAllTrades(20),
-            ])
-                .then(([leaders, trades]) => {
-                    setLeaderboard(leaders);
-                    setBestTrades(trades.filter(t => t.result === 'Win' && t.mentor_score && t.mentor_score >= 4).slice(0, 9));
-                })
-                .catch((error) => {
-                    console.error('Error refetching team data:', error);
-                })
-                .finally(() => {
-                    isFetchingRef.current = false;
-                });
-        };
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-    }, []);
+        return () => { cancelled = true; };
+    }, [dataLoaded]);
 
     const top3 = leaderboard.slice(0, 3);
     const rest = leaderboard.slice(3);
 
-    if (isFirstLoad) {
+    if (!dataLoaded) {
         return (
             <div className="max-w-7xl mx-auto p-8">
                 <div className="animate-pulse space-y-8">

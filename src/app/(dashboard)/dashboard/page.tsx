@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Star, PlusCircle, Check, X, Minus, ArrowRight, Activity } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
@@ -18,77 +18,63 @@ export default function DashboardPage() {
     const [recentTrades, setRecentTrades] = useState<Trade[]>([]);
     const [allTrades, setAllTrades] = useState<Trade[]>([]);
     const [sessionStats, setSessionStats] = useState<{ london: { totalR: number; winRate: number; count: number }; newYork: { totalR: number; winRate: number; count: number } } | null>(null);
-    const [isFirstLoad, setIsFirstLoad] = useState(true);
-
-    // Use refs to avoid dependency issues
-    const userIdRef = useRef<string | null>(null);
-    const isFetchingRef = useRef(false);
+    const [dataLoaded, setDataLoaded] = useState(false);
+    const [loadedUserId, setLoadedUserId] = useState<string | null>(null);
 
     const market = isMarketOpen();
 
-    // Initial data load - runs once when user is ready
+    // Load data when user is available
     useEffect(() => {
-        if (userLoading || !user) return;
-        if (userIdRef.current === user.id) return; // Already loaded for this user
+        // Skip if still loading user
+        if (userLoading) return;
 
-        userIdRef.current = user.id;
-        isFetchingRef.current = true;
+        // No user = show empty state
+        if (!user) {
+            setDataLoaded(true);
+            return;
+        }
 
-        Promise.all([
-            getUserStats(user.id),
-            getUserTrades(user.id, 5),
-            getUserTrades(user.id),
-            getSessionStats(user.id),
-        ])
-            .then(([userStats, recent, all, sessions]) => {
-                setStats(userStats);
-                setRecentTrades(recent);
-                setAllTrades(all);
-                setSessionStats(sessions);
-            })
-            .catch((error) => {
-                console.error('Error loading dashboard data:', error);
-            })
-            .finally(() => {
-                setIsFirstLoad(false);
-                isFetchingRef.current = false;
-            });
-    }, [user, userLoading]);
+        // Skip if already loaded for this user
+        if (dataLoaded && loadedUserId === user.id) {
+            console.log('Data already loaded for user:', user.id);
+            return;
+        }
 
-    // Visibility change - silent refetch (no loading indicator)
-    useEffect(() => {
-        const handleVisibilityChange = () => {
-            // Only refetch if tab becomes visible AND we have already loaded data
-            if (document.visibilityState !== 'visible') return;
-            if (!userIdRef.current) return;
-            if (isFetchingRef.current) return;
+        let cancelled = false;
 
-            isFetchingRef.current = true;
-            const userId = userIdRef.current;
+        const loadData = async () => {
+            try {
+                console.log('Loading dashboard data for user:', user.id);
+                const [userStats, recent, all, sessions] = await Promise.all([
+                    getUserStats(user.id),
+                    getUserTrades(user.id, 5),
+                    getUserTrades(user.id),
+                    getSessionStats(user.id),
+                ]);
 
-            Promise.all([
-                getUserStats(userId),
-                getUserTrades(userId, 5),
-                getUserTrades(userId),
-                getSessionStats(userId),
-            ])
-                .then(([userStats, recent, all, sessions]) => {
+                if (!cancelled) {
                     setStats(userStats);
                     setRecentTrades(recent);
                     setAllTrades(all);
                     setSessionStats(sessions);
-                })
-                .catch((error) => {
-                    console.error('Error refetching dashboard data:', error);
-                })
-                .finally(() => {
-                    isFetchingRef.current = false;
-                });
+                    setLoadedUserId(user.id);
+                    setDataLoaded(true);
+                    console.log('Dashboard data loaded successfully');
+                }
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                if (!cancelled) {
+                    setDataLoaded(true); // Still show page, just with empty data
+                }
+            }
         };
 
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-    }, []);
+        loadData();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [user?.id, userLoading]); // Only depend on user.id, not the whole user object
 
     const getResultIcon = (r: "Win" | "Lose" | "BE") => {
         if (r === "Win") return <Check className="h-4 w-4 text-emerald-500" />;
@@ -108,8 +94,8 @@ export default function DashboardPage() {
         return "text-zinc-400";
     };
 
-    // Only show loading skeleton on FIRST load, not during refetch
-    if (userLoading || isFirstLoad) {
+    // Show loading only during initial user loading or data loading
+    if (userLoading || !dataLoaded) {
         return (
             <div className="max-w-7xl mx-auto p-8">
                 <div className="animate-pulse space-y-8">

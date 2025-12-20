@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, Download, Search, ListIcon, Grid2X2, Calendar, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,59 +15,39 @@ export default function JournalPage() {
     const { user, isLoading: userLoading } = useUser();
     const [trades, setTrades] = useState<Trade[]>([]);
     const [filteredTrades, setFilteredTrades] = useState<Trade[]>([]);
-    const [isFirstLoad, setIsFirstLoad] = useState(true);
+    const [dataLoaded, setDataLoaded] = useState(false);
+    const [loadedUserId, setLoadedUserId] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [sessionFilter, setSessionFilter] = useState("all");
     const [resultFilter, setResultFilter] = useState("all");
 
-    const userIdRef = useRef<string | null>(null);
-    const isFetchingRef = useRef(false);
-
-    // Initial load
+    // Load trades when user is available
     useEffect(() => {
-        if (userLoading || !user) return;
-        if (userIdRef.current === user.id) return;
+        if (userLoading) return;
+        if (!user) {
+            setDataLoaded(true);
+            return;
+        }
+        if (dataLoaded && loadedUserId === user.id) return;
 
-        userIdRef.current = user.id;
-        isFetchingRef.current = true;
+        let cancelled = false;
 
         getUserTrades(user.id)
             .then((data) => {
-                setTrades(data);
-                setFilteredTrades(data);
+                if (!cancelled) {
+                    setTrades(data);
+                    setFilteredTrades(data);
+                    setLoadedUserId(user.id);
+                    setDataLoaded(true);
+                }
             })
             .catch((error) => {
                 console.error('Error loading trades:', error);
-            })
-            .finally(() => {
-                setIsFirstLoad(false);
-                isFetchingRef.current = false;
+                if (!cancelled) setDataLoaded(true);
             });
-    }, [user, userLoading]);
 
-    // Visibility change - silent refetch
-    useEffect(() => {
-        const handleVisibilityChange = () => {
-            if (document.visibilityState !== 'visible') return;
-            if (!userIdRef.current) return;
-            if (isFetchingRef.current) return;
-
-            isFetchingRef.current = true;
-            getUserTrades(userIdRef.current)
-                .then((data) => {
-                    setTrades(data);
-                    setFilteredTrades(data);
-                })
-                .catch((error) => {
-                    console.error('Error refetching trades:', error);
-                })
-                .finally(() => {
-                    isFetchingRef.current = false;
-                });
-        };
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-    }, []);
+        return () => { cancelled = true; };
+    }, [user?.id, userLoading, dataLoaded, loadedUserId]);
 
     // Apply filters
     useEffect(() => {
@@ -121,7 +101,7 @@ export default function JournalPage() {
         totalR: trades.reduce((sum, t) => sum + t.rr, 0),
     };
 
-    if (userLoading || isFirstLoad) {
+    if (userLoading || !dataLoaded) {
         return (
             <div className="max-w-7xl mx-auto p-8">
                 <div className="animate-pulse space-y-6">

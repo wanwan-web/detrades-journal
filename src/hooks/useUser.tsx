@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from 'react';
 import { User, AuthChangeEvent, Session } from '@supabase/supabase-js';
-import { createClient, refreshSession } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase';
 import { getProfile } from '@/lib/queries';
 import type { Profile } from '@/lib/types';
 
@@ -27,6 +27,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const [profile, setProfile] = useState<Profile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    // Track current user ID to prevent unnecessary updates
+    const currentUserIdRef = useRef<string | null>(null);
+
     const loadProfile = useCallback(async (userId: string) => {
         try {
             const profileData = await getProfile(userId);
@@ -37,26 +40,42 @@ export function UserProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
+    // Update user only if ID actually changed
+    const updateUser = useCallback((newUser: User | null) => {
+        const newUserId = newUser?.id ?? null;
+
+        // Only update if the user ID actually changed
+        if (currentUserIdRef.current !== newUserId) {
+            console.log('User changed:', currentUserIdRef.current, '->', newUserId);
+            currentUserIdRef.current = newUserId;
+            setUser(newUser);
+            return true; // User changed
+        }
+        return false; // User did not change
+    }, []);
+
     const fetchUser = useCallback(async () => {
         try {
             const supabase = createClient();
             const { data: { session } } = await supabase.auth.getSession();
 
             if (session?.user) {
-                setUser(session.user);
-                await loadProfile(session.user.id);
+                const changed = updateUser(session.user);
+                if (changed) {
+                    await loadProfile(session.user.id);
+                }
             } else {
-                setUser(null);
+                updateUser(null);
                 setProfile(null);
             }
         } catch (error) {
             console.error('Error fetching user:', error);
-            setUser(null);
+            updateUser(null);
             setProfile(null);
         } finally {
             setIsLoading(false);
         }
-    }, [loadProfile]);
+    }, [loadProfile, updateUser]);
 
     // Initial fetch + auth state listener
     useEffect(() => {
@@ -67,44 +86,23 @@ export function UserProvider({ children }: { children: ReactNode }) {
             console.log('Auth event:', event);
 
             if (event === 'SIGNED_IN' && session?.user) {
-                setUser(session.user);
-                await loadProfile(session.user.id);
+                const changed = updateUser(session.user);
+                if (changed) {
+                    await loadProfile(session.user.id);
+                }
                 setIsLoading(false);
             } else if (event === 'SIGNED_OUT') {
-                setUser(null);
+                updateUser(null);
                 setProfile(null);
                 setIsLoading(false);
-            } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-                setUser(session.user);
             }
+            // TOKEN_REFRESHED: Don't update user state, just let the token refresh
         });
 
         return () => subscription.unsubscribe();
-    }, [fetchUser, loadProfile]);
+    }, [fetchUser, loadProfile, updateUser]);
 
-    // Handle visibility change - refresh session first, then fetch data
-    useEffect(() => {
-        const handleVisibilityChange = async () => {
-            if (document.visibilityState !== 'visible') return;
-
-            // Refresh session first when tab becomes visible
-            await refreshSession();
-
-            // Then get the updated session
-            const supabase = createClient();
-            const { data: { session } } = await supabase.auth.getSession();
-
-            if (session?.user) {
-                setUser(session.user);
-                // Also refresh profile if needed
-                const profileData = await getProfile(session.user.id);
-                setProfile(profileData);
-            }
-        };
-
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-    }, []);
+    // No visibility change handler needed - onAuthStateChange handles it
 
     return (
         <UserContext.Provider value={{
