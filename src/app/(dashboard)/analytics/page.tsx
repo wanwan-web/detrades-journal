@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { TrendingUp, TrendingDown, BarChart3, Target, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/hooks/useUser";
@@ -13,51 +13,72 @@ export default function AnalyticsPage() {
     const [sessionStats, setSessionStats] = useState<{ london: { totalR: number; winRate: number; count: number }; newYork: { totalR: number; winRate: number; count: number } } | null>(null);
     const [profilingStats, setProfilingStats] = useState<{ profiling: string; count: number; totalR: number; winRate: number }[]>([]);
     const [trades, setTrades] = useState<Trade[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const isInitializedRef = useRef(false);
+    const [isFirstLoad, setIsFirstLoad] = useState(true);
 
-    const loadData = useCallback(async (showLoading = true) => {
-        if (!user) {
-            setIsLoading(false);
-            return;
-        }
-
-        try {
-            if (showLoading) setIsLoading(true);
-            const [userStats, sessions, profiling, allTrades] = await Promise.all([
-                getUserStats(user.id),
-                getSessionStats(user.id),
-                getProfilingStats(user.id),
-                getUserTrades(user.id),
-            ]);
-
-            setStats(userStats);
-            setSessionStats(sessions);
-            setProfilingStats(profiling);
-            setTrades(allTrades);
-            isInitializedRef.current = true;
-        } catch (error) {
-            console.error('Error loading analytics:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [user]);
+    const userIdRef = useRef<string | null>(null);
+    const isFetchingRef = useRef(false);
 
     // Initial load
     useEffect(() => {
-        if (!userLoading) loadData();
-    }, [userLoading, loadData]);
+        if (userLoading || !user) return;
+        if (userIdRef.current === user.id) return;
 
-    // Refetch on visibility change
+        userIdRef.current = user.id;
+        isFetchingRef.current = true;
+
+        Promise.all([
+            getUserStats(user.id),
+            getSessionStats(user.id),
+            getProfilingStats(user.id),
+            getUserTrades(user.id),
+        ])
+            .then(([userStats, sessions, profiling, allTrades]) => {
+                setStats(userStats);
+                setSessionStats(sessions);
+                setProfilingStats(profiling);
+                setTrades(allTrades);
+            })
+            .catch((error) => {
+                console.error('Error loading analytics:', error);
+            })
+            .finally(() => {
+                setIsFirstLoad(false);
+                isFetchingRef.current = false;
+            });
+    }, [user, userLoading]);
+
+    // Visibility change - silent refetch
     useEffect(() => {
         const handleVisibilityChange = () => {
-            if (document.visibilityState === 'visible' && isInitializedRef.current && user) {
-                loadData(false);
-            }
+            if (document.visibilityState !== 'visible') return;
+            if (!userIdRef.current) return;
+            if (isFetchingRef.current) return;
+
+            isFetchingRef.current = true;
+            const userId = userIdRef.current;
+
+            Promise.all([
+                getUserStats(userId),
+                getSessionStats(userId),
+                getProfilingStats(userId),
+                getUserTrades(userId),
+            ])
+                .then(([userStats, sessions, profiling, allTrades]) => {
+                    setStats(userStats);
+                    setSessionStats(sessions);
+                    setProfilingStats(profiling);
+                    setTrades(allTrades);
+                })
+                .catch((error) => {
+                    console.error('Error refetching analytics:', error);
+                })
+                .finally(() => {
+                    isFetchingRef.current = false;
+                });
         };
         document.addEventListener('visibilitychange', handleVisibilityChange);
         return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-    }, [loadData, user]);
+    }, []);
 
     // Calculate monthly stats
     const getMonthlyStats = () => {
@@ -84,7 +105,7 @@ export default function AnalyticsPage() {
     const monthlyStats = getMonthlyStats();
     const maxMonthlyR = Math.max(...monthlyStats.map(m => Math.abs(m.totalR)), 1);
 
-    if (userLoading || isLoading) {
+    if (userLoading || isFirstLoad) {
         return (
             <div className="max-w-7xl mx-auto p-8">
                 <div className="animate-pulse space-y-6">

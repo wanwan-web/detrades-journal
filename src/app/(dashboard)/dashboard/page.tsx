@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { Star, PlusCircle, Check, X, Minus, ArrowRight, Activity } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
@@ -18,57 +18,77 @@ export default function DashboardPage() {
     const [recentTrades, setRecentTrades] = useState<Trade[]>([]);
     const [allTrades, setAllTrades] = useState<Trade[]>([]);
     const [sessionStats, setSessionStats] = useState<{ london: { totalR: number; winRate: number; count: number }; newYork: { totalR: number; winRate: number; count: number } } | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const isInitializedRef = useRef(false);
+    const [isFirstLoad, setIsFirstLoad] = useState(true);
+
+    // Use refs to avoid dependency issues
+    const userIdRef = useRef<string | null>(null);
+    const isFetchingRef = useRef(false);
 
     const market = isMarketOpen();
 
-    const loadData = useCallback(async (showLoading = true) => {
-        if (!user) {
-            setIsLoading(false);
-            return;
-        }
-
-        try {
-            if (showLoading) setIsLoading(true);
-            const [userStats, recent, all, sessions] = await Promise.all([
-                getUserStats(user.id),
-                getUserTrades(user.id, 5),
-                getUserTrades(user.id),
-                getSessionStats(user.id),
-            ]);
-
-            setStats(userStats);
-            setRecentTrades(recent);
-            setAllTrades(all);
-            setSessionStats(sessions);
-            isInitializedRef.current = true;
-        } catch (error) {
-            console.error('Error loading dashboard data:', error);
-            // Keep existing data on error instead of clearing
-        } finally {
-            setIsLoading(false);
-        }
-    }, [user]);
-
-    // Initial data load
+    // Initial data load - runs once when user is ready
     useEffect(() => {
-        if (!userLoading) {
-            loadData();
-        }
-    }, [userLoading, loadData]);
+        if (userLoading || !user) return;
+        if (userIdRef.current === user.id) return; // Already loaded for this user
 
-    // Refetch on visibility change (tab switch)
+        userIdRef.current = user.id;
+        isFetchingRef.current = true;
+
+        Promise.all([
+            getUserStats(user.id),
+            getUserTrades(user.id, 5),
+            getUserTrades(user.id),
+            getSessionStats(user.id),
+        ])
+            .then(([userStats, recent, all, sessions]) => {
+                setStats(userStats);
+                setRecentTrades(recent);
+                setAllTrades(all);
+                setSessionStats(sessions);
+            })
+            .catch((error) => {
+                console.error('Error loading dashboard data:', error);
+            })
+            .finally(() => {
+                setIsFirstLoad(false);
+                isFetchingRef.current = false;
+            });
+    }, [user, userLoading]);
+
+    // Visibility change - silent refetch (no loading indicator)
     useEffect(() => {
         const handleVisibilityChange = () => {
-            if (document.visibilityState === 'visible' && isInitializedRef.current && user) {
-                loadData(false); // Silent refresh
-            }
+            // Only refetch if tab becomes visible AND we have already loaded data
+            if (document.visibilityState !== 'visible') return;
+            if (!userIdRef.current) return;
+            if (isFetchingRef.current) return;
+
+            isFetchingRef.current = true;
+            const userId = userIdRef.current;
+
+            Promise.all([
+                getUserStats(userId),
+                getUserTrades(userId, 5),
+                getUserTrades(userId),
+                getSessionStats(userId),
+            ])
+                .then(([userStats, recent, all, sessions]) => {
+                    setStats(userStats);
+                    setRecentTrades(recent);
+                    setAllTrades(all);
+                    setSessionStats(sessions);
+                })
+                .catch((error) => {
+                    console.error('Error refetching dashboard data:', error);
+                })
+                .finally(() => {
+                    isFetchingRef.current = false;
+                });
         };
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
         return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-    }, [loadData, user]);
+    }, []);
 
     const getResultIcon = (r: "Win" | "Lose" | "BE") => {
         if (r === "Win") return <Check className="h-4 w-4 text-emerald-500" />;
@@ -88,7 +108,8 @@ export default function DashboardPage() {
         return "text-zinc-400";
     };
 
-    if (userLoading || isLoading) {
+    // Only show loading skeleton on FIRST load, not during refetch
+    if (userLoading || isFirstLoad) {
         return (
             <div className="max-w-7xl mx-auto p-8">
                 <div className="animate-pulse space-y-8">
