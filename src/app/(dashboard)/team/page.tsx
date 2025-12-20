@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { Trophy, BookOpen, Crown, Medal, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -14,38 +14,41 @@ export default function TeamHubPage() {
     const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
     const [bestTrades, setBestTrades] = useState<TradeWithProfile[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const isInitializedRef = useRef(false);
 
-    useEffect(() => {
-        let isMounted = true;
+    const loadData = useCallback(async (showLoading = true) => {
+        try {
+            if (showLoading) setIsLoading(true);
+            const [leaders, trades] = await Promise.all([
+                getLeaderboard(),
+                getAllTrades(20),
+            ]);
 
-        async function loadData() {
-            try {
-                setIsLoading(true);
-                const [leaders, trades] = await Promise.all([
-                    getLeaderboard(),
-                    getAllTrades(20),
-                ]);
-
-                if (isMounted) {
-                    setLeaderboard(leaders);
-                    // Filter best trades (wins with high R and reviewed)
-                    setBestTrades(trades.filter(t => t.result === 'Win' && t.mentor_score && t.mentor_score >= 4).slice(0, 9));
-                }
-            } catch (error) {
-                console.error('Error loading team data:', error);
-                if (isMounted) {
-                    setLeaderboard([]);
-                    setBestTrades([]);
-                }
-            } finally {
-                if (isMounted) setIsLoading(false);
-            }
+            setLeaderboard(leaders);
+            setBestTrades(trades.filter(t => t.result === 'Win' && t.mentor_score && t.mentor_score >= 4).slice(0, 9));
+            isInitializedRef.current = true;
+        } catch (error) {
+            console.error('Error loading team data:', error);
+        } finally {
+            setIsLoading(false);
         }
-
-        loadData();
-
-        return () => { isMounted = false; };
     }, []);
+
+    // Initial load
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
+
+    // Refetch on visibility change
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible' && isInitializedRef.current) {
+                loadData(false);
+            }
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [loadData]);
 
     const top3 = leaderboard.slice(0, 3);
     const rest = leaderboard.slice(3);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { TrendingUp, TrendingDown, BarChart3, Target, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/hooks/useUser";
@@ -14,48 +14,50 @@ export default function AnalyticsPage() {
     const [profilingStats, setProfilingStats] = useState<{ profiling: string; count: number; totalR: number; winRate: number }[]>([]);
     const [trades, setTrades] = useState<Trade[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const isInitializedRef = useRef(false);
 
-    useEffect(() => {
-        let isMounted = true;
-
-        async function loadData() {
-            if (!user) {
-                setIsLoading(false);
-                return;
-            }
-
-            try {
-                setIsLoading(true);
-                const [userStats, sessions, profiling, allTrades] = await Promise.all([
-                    getUserStats(user.id),
-                    getSessionStats(user.id),
-                    getProfilingStats(user.id),
-                    getUserTrades(user.id),
-                ]);
-
-                if (isMounted) {
-                    setStats(userStats);
-                    setSessionStats(sessions);
-                    setProfilingStats(profiling);
-                    setTrades(allTrades);
-                }
-            } catch (error) {
-                console.error('Error loading analytics:', error);
-                if (isMounted) {
-                    setStats(null);
-                    setSessionStats(null);
-                    setProfilingStats([]);
-                    setTrades([]);
-                }
-            } finally {
-                if (isMounted) setIsLoading(false);
-            }
+    const loadData = useCallback(async (showLoading = true) => {
+        if (!user) {
+            setIsLoading(false);
+            return;
         }
 
-        if (!userLoading) loadData();
+        try {
+            if (showLoading) setIsLoading(true);
+            const [userStats, sessions, profiling, allTrades] = await Promise.all([
+                getUserStats(user.id),
+                getSessionStats(user.id),
+                getProfilingStats(user.id),
+                getUserTrades(user.id),
+            ]);
 
-        return () => { isMounted = false; };
-    }, [user, userLoading]);
+            setStats(userStats);
+            setSessionStats(sessions);
+            setProfilingStats(profiling);
+            setTrades(allTrades);
+            isInitializedRef.current = true;
+        } catch (error) {
+            console.error('Error loading analytics:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [user]);
+
+    // Initial load
+    useEffect(() => {
+        if (!userLoading) loadData();
+    }, [userLoading, loadData]);
+
+    // Refetch on visibility change
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible' && isInitializedRef.current && user) {
+                loadData(false);
+            }
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [loadData, user]);
 
     // Calculate monthly stats
     const getMonthlyStats = () => {

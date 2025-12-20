@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { Plus, Download, Search, ListIcon, Grid2X2, Calendar, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,38 +19,42 @@ export default function JournalPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [sessionFilter, setSessionFilter] = useState("all");
     const [resultFilter, setResultFilter] = useState("all");
+    const isInitializedRef = useRef(false);
 
-    useEffect(() => {
-        let isMounted = true;
-
-        async function loadTrades() {
-            if (!user) {
-                setIsLoading(false);
-                return;
-            }
-
-            try {
-                setIsLoading(true);
-                const data = await getUserTrades(user.id);
-                if (isMounted) {
-                    setTrades(data);
-                    setFilteredTrades(data);
-                }
-            } catch (error) {
-                console.error('Error loading trades:', error);
-                if (isMounted) {
-                    setTrades([]);
-                    setFilteredTrades([]);
-                }
-            } finally {
-                if (isMounted) setIsLoading(false);
-            }
+    const loadTrades = useCallback(async (showLoading = true) => {
+        if (!user) {
+            setIsLoading(false);
+            return;
         }
 
-        if (!userLoading) loadTrades();
+        try {
+            if (showLoading) setIsLoading(true);
+            const data = await getUserTrades(user.id);
+            setTrades(data);
+            setFilteredTrades(data);
+            isInitializedRef.current = true;
+        } catch (error) {
+            console.error('Error loading trades:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [user]);
 
-        return () => { isMounted = false; };
-    }, [user, userLoading]);
+    // Initial load
+    useEffect(() => {
+        if (!userLoading) loadTrades();
+    }, [userLoading, loadTrades]);
+
+    // Refetch on visibility change
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible' && isInitializedRef.current && user) {
+                loadTrades(false);
+            }
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [loadTrades, user]);
 
     // Apply filters
     useEffect(() => {

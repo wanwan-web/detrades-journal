@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { Star, PlusCircle, Check, X, Minus, ArrowRight, Activity } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
@@ -19,51 +19,56 @@ export default function DashboardPage() {
     const [allTrades, setAllTrades] = useState<Trade[]>([]);
     const [sessionStats, setSessionStats] = useState<{ london: { totalR: number; winRate: number; count: number }; newYork: { totalR: number; winRate: number; count: number } } | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const isInitializedRef = useRef(false);
 
     const market = isMarketOpen();
 
-    useEffect(() => {
-        let isMounted = true;
-
-        async function loadData() {
-            if (!user) {
-                setIsLoading(false);
-                return;
-            }
-
-            try {
-                setIsLoading(true);
-                const [userStats, recent, all, sessions] = await Promise.all([
-                    getUserStats(user.id),
-                    getUserTrades(user.id, 5),
-                    getUserTrades(user.id),
-                    getSessionStats(user.id),
-                ]);
-
-                if (isMounted) {
-                    setStats(userStats);
-                    setRecentTrades(recent);
-                    setAllTrades(all);
-                    setSessionStats(sessions);
-                }
-            } catch (error) {
-                console.error('Error loading dashboard data:', error);
-                // Set empty defaults on error
-                if (isMounted) {
-                    setStats(null);
-                    setRecentTrades([]);
-                    setAllTrades([]);
-                    setSessionStats(null);
-                }
-            } finally {
-                if (isMounted) setIsLoading(false);
-            }
+    const loadData = useCallback(async (showLoading = true) => {
+        if (!user) {
+            setIsLoading(false);
+            return;
         }
 
-        if (!userLoading) loadData();
+        try {
+            if (showLoading) setIsLoading(true);
+            const [userStats, recent, all, sessions] = await Promise.all([
+                getUserStats(user.id),
+                getUserTrades(user.id, 5),
+                getUserTrades(user.id),
+                getSessionStats(user.id),
+            ]);
 
-        return () => { isMounted = false; };
-    }, [user, userLoading]);
+            setStats(userStats);
+            setRecentTrades(recent);
+            setAllTrades(all);
+            setSessionStats(sessions);
+            isInitializedRef.current = true;
+        } catch (error) {
+            console.error('Error loading dashboard data:', error);
+            // Keep existing data on error instead of clearing
+        } finally {
+            setIsLoading(false);
+        }
+    }, [user]);
+
+    // Initial data load
+    useEffect(() => {
+        if (!userLoading) {
+            loadData();
+        }
+    }, [userLoading, loadData]);
+
+    // Refetch on visibility change (tab switch)
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible' && isInitializedRef.current && user) {
+                loadData(false); // Silent refresh
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [loadData, user]);
 
     const getResultIcon = (r: "Win" | "Lose" | "BE") => {
         if (r === "Win") return <Check className="h-4 w-4 text-emerald-500" />;
