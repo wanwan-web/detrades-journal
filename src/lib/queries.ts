@@ -209,11 +209,11 @@ export async function getUserStats(userId: string): Promise<UserStats> {
         };
     }
 
-    const wins = trades.filter(t => t.result === 'Win').length;
-    const totalR = trades.reduce((sum, t) => sum + (t.rr || 0), 0);
-    const scoredTrades = trades.filter(t => t.mentor_score !== null);
+    const wins = trades.filter((t: Trade) => t.result === 'Win').length;
+    const totalR = trades.reduce((sum: number, t: Trade) => sum + (t.rr || 0), 0);
+    const scoredTrades = trades.filter((t: Trade) => t.mentor_score !== null);
     const avgSop = scoredTrades.length > 0
-        ? scoredTrades.reduce((sum, t) => sum + (t.mentor_score || 0), 0) / scoredTrades.length
+        ? scoredTrades.reduce((sum: number, t: Trade) => sum + (t.mentor_score || 0), 0) / scoredTrades.length
         : 0;
 
     return {
@@ -256,9 +256,9 @@ export async function getTeamStats(): Promise<TeamStats> {
         .select('id')
         .eq('status', 'submitted');
 
-    const teamTotalR = todayTrades?.reduce((sum, t) => sum + (t.rr || 0), 0) ?? 0;
-    const wins = todayTrades?.filter(t => t.result === 'Win').length ?? 0;
-    const activeUsers = new Set(todayTrades?.map(t => t.user_id) ?? []);
+    const teamTotalR = todayTrades?.reduce((sum: number, t: { rr: number }) => sum + (t.rr || 0), 0) ?? 0;
+    const wins = todayTrades?.filter((t: { result: string }) => t.result === 'Win').length ?? 0;
+    const activeUsers = new Set(todayTrades?.map((t: { user_id: string }) => t.user_id) ?? []);
 
     return {
         totalMembers: members?.length ?? 0,
@@ -310,14 +310,14 @@ export async function getLeaderboard(): Promise<(Profile & { totalR: number; tra
 
     if (!profiles) return [];
 
-    const leaderboard = await Promise.all(profiles.map(async (profile) => {
+    const leaderboard = await Promise.all(profiles.map(async (profile: Profile) => {
         const { data: trades } = await supabase
             .from('trades')
             .select('rr, result')
             .eq('user_id', profile.id);
 
-        const totalR = trades?.reduce((sum, t) => sum + (t.rr || 0), 0) ?? 0;
-        const wins = trades?.filter(t => t.result === 'Win').length ?? 0;
+        const totalR = trades?.reduce((sum: number, t: { rr: number }) => sum + (t.rr || 0), 0) ?? 0;
+        const wins = trades?.filter((t: { result: string }) => t.result === 'Win').length ?? 0;
         const winRate = trades?.length ? Math.round((wins / trades.length) * 100) : 0;
 
         return {
@@ -339,12 +339,13 @@ export async function getSessionStats(userId?: string) {
     const { data } = await query;
     if (!data) return { london: { totalR: 0, winRate: 0, count: 0 }, newYork: { totalR: 0, winRate: 0, count: 0 } };
 
-    const londonTrades = data.filter(t => t.session === 'London');
-    const nyTrades = data.filter(t => t.session === 'New York');
+    const londonTrades = data.filter((t: { session: string }) => t.session === 'London');
+    const nyTrades = data.filter((t: { session: string }) => t.session === 'New York');
 
-    const calcStats = (trades: typeof data) => ({
-        totalR: Math.round(trades.reduce((sum, t) => sum + (t.rr || 0), 0) * 10) / 10,
-        winRate: trades.length ? Math.round((trades.filter(t => t.result === 'Win').length / trades.length) * 100) : 0,
+    type TradeData = { session: string; rr: number; result: string };
+    const calcStats = (trades: TradeData[]) => ({
+        totalR: Math.round(trades.reduce((sum: number, t: TradeData) => sum + (t.rr || 0), 0) * 10) / 10,
+        winRate: trades.length ? Math.round((trades.filter((t: TradeData) => t.result === 'Win').length / trades.length) * 100) : 0,
         count: trades.length,
     });
 
@@ -362,16 +363,17 @@ export async function getProfilingStats(userId?: string) {
     const { data } = await query;
     if (!data) return [];
 
-    const grouped = data.reduce((acc, t) => {
+    type ProfilingTrade = { profiling: string; rr: number; result: string };
+    const grouped = data.reduce((acc: Record<string, ProfilingTrade[]>, t: ProfilingTrade) => {
         if (!acc[t.profiling]) acc[t.profiling] = [];
         acc[t.profiling].push(t);
         return acc;
-    }, {} as Record<string, typeof data>);
+    }, {} as Record<string, ProfilingTrade[]>);
 
-    return Object.entries(grouped).map(([profiling, trades]) => ({
+    return (Object.entries(grouped) as [string, ProfilingTrade[]][]).map(([profiling, trades]) => ({
         profiling,
         count: trades.length,
         totalR: Math.round(trades.reduce((sum, t) => sum + (t.rr || 0), 0) * 10) / 10,
-        winRate: Math.round((trades.filter(t => t.result === 'Win').length / trades.length) * 100),
+        winRate: Math.round((trades.filter((t) => t.result === 'Win').length / trades.length) * 100),
     }));
 }

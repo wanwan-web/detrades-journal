@@ -1,8 +1,8 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
-import { User } from '@supabase/supabase-js';
-import { createClient } from '@/lib/supabase';
+import { User, AuthChangeEvent, Session } from '@supabase/supabase-js';
+import { createClient, refreshSession } from '@/lib/supabase';
 import { getProfile } from '@/lib/queries';
 import type { Profile } from '@/lib/types';
 
@@ -60,12 +60,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     // Initial fetch + auth state listener
     useEffect(() => {
-        // Initial load
         fetchUser();
 
-        // Listen for auth changes
         const supabase = createClient();
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
             console.log('Auth event:', event);
 
             if (event === 'SIGNED_IN' && session?.user) {
@@ -83,6 +81,30 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
         return () => subscription.unsubscribe();
     }, [fetchUser, loadProfile]);
+
+    // Handle visibility change - refresh session first, then fetch data
+    useEffect(() => {
+        const handleVisibilityChange = async () => {
+            if (document.visibilityState !== 'visible') return;
+
+            // Refresh session first when tab becomes visible
+            await refreshSession();
+
+            // Then get the updated session
+            const supabase = createClient();
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (session?.user) {
+                setUser(session.user);
+                // Also refresh profile if needed
+                const profileData = await getProfile(session.user.id);
+                setProfile(profileData);
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, []);
 
     return (
         <UserContext.Provider value={{
