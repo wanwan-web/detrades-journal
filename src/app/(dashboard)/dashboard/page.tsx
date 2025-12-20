@@ -23,25 +23,46 @@ export default function DashboardPage() {
     const market = isMarketOpen();
 
     useEffect(() => {
+        let isMounted = true;
+
         async function loadData() {
-            if (!user) return;
+            if (!user) {
+                setIsLoading(false);
+                return;
+            }
 
-            setIsLoading(true);
-            const [userStats, recent, all, sessions] = await Promise.all([
-                getUserStats(user.id),
-                getUserTrades(user.id, 5),
-                getUserTrades(user.id),
-                getSessionStats(user.id),
-            ]);
+            try {
+                setIsLoading(true);
+                const [userStats, recent, all, sessions] = await Promise.all([
+                    getUserStats(user.id),
+                    getUserTrades(user.id, 5),
+                    getUserTrades(user.id),
+                    getSessionStats(user.id),
+                ]);
 
-            setStats(userStats);
-            setRecentTrades(recent);
-            setAllTrades(all);
-            setSessionStats(sessions);
-            setIsLoading(false);
+                if (isMounted) {
+                    setStats(userStats);
+                    setRecentTrades(recent);
+                    setAllTrades(all);
+                    setSessionStats(sessions);
+                }
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                // Set empty defaults on error
+                if (isMounted) {
+                    setStats(null);
+                    setRecentTrades([]);
+                    setAllTrades([]);
+                    setSessionStats(null);
+                }
+            } finally {
+                if (isMounted) setIsLoading(false);
+            }
         }
 
         if (!userLoading) loadData();
+
+        return () => { isMounted = false; };
     }, [user, userLoading]);
 
     const getResultIcon = (r: "Win" | "Lose" | "BE") => {

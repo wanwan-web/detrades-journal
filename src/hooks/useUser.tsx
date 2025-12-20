@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from 'react';
 import { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase';
 import { getProfile } from '@/lib/queries';
@@ -26,84 +26,100 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isInitialized, setIsInitialized] = useState(false);
+    const isFetchingRef = useRef(false);
 
-    const fetchUser = useCallback(async () => {
+    const fetchUser = useCallback(async (showLoading = true) => {
+        // Prevent concurrent fetches
+        if (isFetchingRef.current) return;
+        isFetchingRef.current = true;
+
         try {
+            if (showLoading) setIsLoading(true);
+
             const supabase = createClient();
 
-            // Use a timeout to prevent infinite loading
-            const timeoutPromise = new Promise<null>((_, reject) =>
-                setTimeout(() => reject(new Error('Timeout')), 10000)
-            );
+            // getSession is faster and works better after tab switch
+            const { data: { session } } = await supabase.auth.getSession();
 
-            const userPromise = supabase.auth.getUser();
-
-            const result = await Promise.race([userPromise, timeoutPromise]);
-
-            if (result && 'data' in result) {
-                const userData = result.data.user;
-                setUser(userData);
-
-                if (userData) {
-                    const profileData = await getProfile(userData.id);
-                    setProfile(profileData);
-                } else {
-                    setProfile(null);
-                }
+            if (session?.user) {
+                setUser(session.user);
+                const profileData = await getProfile(session.user.id);
+                setProfile(profileData);
+            } else {
+                setUser(null);
+                setProfile(null);
             }
         } catch (error) {
             console.error('Error fetching user:', error);
-            // On error, just set loading to false to prevent stuck state
+            // On error, just clear state gracefully - don't crash
             setUser(null);
             setProfile(null);
         } finally {
             setIsLoading(false);
+            setIsInitialized(true);
+            isFetchingRef.current = false;
         }
     }, []);
 
+    // Initial fetch on mount
     useEffect(() => {
         fetchUser();
 
         const supabase = createClient();
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
-            if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
-                setIsLoading(true);
-                await fetchUser();
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            // Only refetch on explicit auth events
+            if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+                if (session?.user) {
+                    setUser(session.user);
+                    const profileData = await getProfile(session.user.id);
+                    setProfile(profileData);
+                } else {
+                    setUser(null);
+                    setProfile(null);
+                }
+                setIsLoading(false);
+            } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+                // Just update user without full refetch
+                setUser(session.user);
             }
         });
 
-        // Handle visibility change - refresh session when tab becomes visible
+        return () => subscription.unsubscribe();
+    }, [fetchUser]);
+
+    // Handle visibility change - use silent refresh, no loading indicator
+    useEffect(() => {
+        let refreshTimer: NodeJS.Timeout | null = null;
+
         const handleVisibilityChange = () => {
-            if (document.visibilityState === 'visible') {
-                // Refresh session when tab becomes visible again
-                supabase.auth.getSession().then(({ data: { session } }) => {
-                    if (session) {
-                        // Session is still valid, refresh user data silently
-                        fetchUser();
-                    } else {
-                        // Session expired, update state
-                        setUser(null);
-                        setProfile(null);
-                        setIsLoading(false);
-                    }
-                });
+            if (document.visibilityState === 'visible' && isInitialized) {
+                // Small delay to let browser wake up properly
+                refreshTimer = setTimeout(() => {
+                    fetchUser(false); // Silent refresh, no loading indicator
+                }, 100);
             }
         };
 
-        // Handle online/offline status
-        const handleOnline = () => {
-            fetchUser();
-        };
-
         document.addEventListener('visibilitychange', handleVisibilityChange);
-        window.addEventListener('online', handleOnline);
 
         return () => {
-            subscription.unsubscribe();
             document.removeEventListener('visibilitychange', handleVisibilityChange);
-            window.removeEventListener('online', handleOnline);
+            if (refreshTimer) clearTimeout(refreshTimer);
         };
-    }, [fetchUser]);
+    }, [fetchUser, isInitialized]);
+
+    // Handle focus event as backup
+    useEffect(() => {
+        const handleFocus = () => {
+            if (isInitialized) {
+                fetchUser(false);
+            }
+        };
+
+        window.addEventListener('focus', handleFocus);
+        return () => window.removeEventListener('focus', handleFocus);
+    }, [fetchUser, isInitialized]);
 
     return (
         <UserContext.Provider value={{

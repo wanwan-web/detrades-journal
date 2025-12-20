@@ -21,15 +21,35 @@ export default function JournalPage() {
     const [resultFilter, setResultFilter] = useState("all");
 
     useEffect(() => {
+        let isMounted = true;
+
         async function loadTrades() {
-            if (!user) return;
-            setIsLoading(true);
-            const data = await getUserTrades(user.id);
-            setTrades(data);
-            setFilteredTrades(data);
-            setIsLoading(false);
+            if (!user) {
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                setIsLoading(true);
+                const data = await getUserTrades(user.id);
+                if (isMounted) {
+                    setTrades(data);
+                    setFilteredTrades(data);
+                }
+            } catch (error) {
+                console.error('Error loading trades:', error);
+                if (isMounted) {
+                    setTrades([]);
+                    setFilteredTrades([]);
+                }
+            } finally {
+                if (isMounted) setIsLoading(false);
+            }
         }
+
         if (!userLoading) loadTrades();
+
+        return () => { isMounted = false; };
     }, [user, userLoading]);
 
     // Apply filters

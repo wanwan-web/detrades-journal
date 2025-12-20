@@ -16,18 +16,35 @@ export default function TeamHubPage() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        let isMounted = true;
+
         async function loadData() {
-            setIsLoading(true);
-            const [leaders, trades] = await Promise.all([
-                getLeaderboard(),
-                getAllTrades(20),
-            ]);
-            setLeaderboard(leaders);
-            // Filter best trades (wins with high R and reviewed)
-            setBestTrades(trades.filter(t => t.result === 'Win' && t.mentor_score && t.mentor_score >= 4).slice(0, 9));
-            setIsLoading(false);
+            try {
+                setIsLoading(true);
+                const [leaders, trades] = await Promise.all([
+                    getLeaderboard(),
+                    getAllTrades(20),
+                ]);
+
+                if (isMounted) {
+                    setLeaderboard(leaders);
+                    // Filter best trades (wins with high R and reviewed)
+                    setBestTrades(trades.filter(t => t.result === 'Win' && t.mentor_score && t.mentor_score >= 4).slice(0, 9));
+                }
+            } catch (error) {
+                console.error('Error loading team data:', error);
+                if (isMounted) {
+                    setLeaderboard([]);
+                    setBestTrades([]);
+                }
+            } finally {
+                if (isMounted) setIsLoading(false);
+            }
         }
+
         loadData();
+
+        return () => { isMounted = false; };
     }, []);
 
     const top3 = leaderboard.slice(0, 3);

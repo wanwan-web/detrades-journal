@@ -16,22 +16,45 @@ export default function AnalyticsPage() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        let isMounted = true;
+
         async function loadData() {
-            if (!user) return;
-            setIsLoading(true);
-            const [userStats, sessions, profiling, allTrades] = await Promise.all([
-                getUserStats(user.id),
-                getSessionStats(user.id),
-                getProfilingStats(user.id),
-                getUserTrades(user.id),
-            ]);
-            setStats(userStats);
-            setSessionStats(sessions);
-            setProfilingStats(profiling);
-            setTrades(allTrades);
-            setIsLoading(false);
+            if (!user) {
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                setIsLoading(true);
+                const [userStats, sessions, profiling, allTrades] = await Promise.all([
+                    getUserStats(user.id),
+                    getSessionStats(user.id),
+                    getProfilingStats(user.id),
+                    getUserTrades(user.id),
+                ]);
+
+                if (isMounted) {
+                    setStats(userStats);
+                    setSessionStats(sessions);
+                    setProfilingStats(profiling);
+                    setTrades(allTrades);
+                }
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+                if (isMounted) {
+                    setStats(null);
+                    setSessionStats(null);
+                    setProfilingStats([]);
+                    setTrades([]);
+                }
+            } finally {
+                if (isMounted) setIsLoading(false);
+            }
         }
+
         if (!userLoading) loadData();
+
+        return () => { isMounted = false; };
     }, [user, userLoading]);
 
     // Calculate monthly stats
