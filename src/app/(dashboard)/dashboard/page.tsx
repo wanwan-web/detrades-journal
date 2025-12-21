@@ -1,80 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Star, PlusCircle, Check, X, Minus, ArrowRight, Activity } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { RiskGuard } from "@/components/dashboard/RiskGuard";
 import { EquityCurve } from "@/components/dashboard/EquityCurve";
 import { useUser } from "@/hooks/useUser";
-import { getUserStats, getUserTrades, getSessionStats } from "@/lib/queries";
+import { useDashboardData } from "@/hooks/useDashboardData";
 import { isMarketOpen } from "@/lib/date-utils";
 import { cn } from "@/lib/utils";
-import type { Trade, UserStats } from "@/lib/types";
 
 export default function DashboardPage() {
     const { user, profile, isLoading: userLoading } = useUser();
-    const [stats, setStats] = useState<UserStats | null>(null);
-    const [recentTrades, setRecentTrades] = useState<Trade[]>([]);
-    const [allTrades, setAllTrades] = useState<Trade[]>([]);
-    const [sessionStats, setSessionStats] = useState<{ london: { totalR: number; winRate: number; count: number }; newYork: { totalR: number; winRate: number; count: number } } | null>(null);
-    const [dataLoaded, setDataLoaded] = useState(false);
-    const [loadedUserId, setLoadedUserId] = useState<string | null>(null);
+    const { data, isLoading: dataLoading, isFetching } = useDashboardData(user?.id);
 
     const market = isMarketOpen();
 
-    // Load data when user is available
-    useEffect(() => {
-        // Skip if still loading user
-        if (userLoading) return;
-
-        // No user = show empty state
-        if (!user) {
-            setDataLoaded(true);
-            return;
-        }
-
-        // Skip if already loaded for this user
-        if (dataLoaded && loadedUserId === user.id) {
-            console.log('Data already loaded for user:', user.id);
-            return;
-        }
-
-        let cancelled = false;
-
-        const loadData = async () => {
-            try {
-                console.log('Loading dashboard data for user:', user.id);
-                const [userStats, recent, all, sessions] = await Promise.all([
-                    getUserStats(user.id),
-                    getUserTrades(user.id, 5),
-                    getUserTrades(user.id),
-                    getSessionStats(user.id),
-                ]);
-
-                if (!cancelled) {
-                    setStats(userStats);
-                    setRecentTrades(recent);
-                    setAllTrades(all);
-                    setSessionStats(sessions);
-                    setLoadedUserId(user.id);
-                    setDataLoaded(true);
-                    console.log('Dashboard data loaded successfully');
-                }
-            } catch (error) {
-                console.error('Error loading dashboard data:', error);
-                if (!cancelled) {
-                    setDataLoaded(true); // Still show page, just with empty data
-                }
-            }
-        };
-
-        loadData();
-
-        return () => {
-            cancelled = true;
-        };
-    }, [user?.id, userLoading]); // Only depend on user.id, not the whole user object
+    const stats = data?.stats ?? null;
+    const recentTrades = data?.recentTrades ?? [];
+    const allTrades = data?.allTrades ?? [];
+    const sessionStats = data?.sessionStats ?? null;
 
     const getResultIcon = (r: "Win" | "Lose" | "BE") => {
         if (r === "Win") return <Check className="h-4 w-4 text-emerald-500" />;
@@ -94,8 +39,8 @@ export default function DashboardPage() {
         return "text-zinc-400";
     };
 
-    // Show loading only during initial user loading or data loading
-    if (userLoading || !dataLoaded) {
+    // Show loading only on initial load, not during background refetch
+    if (userLoading || (dataLoading && !data)) {
         return (
             <div className="max-w-7xl mx-auto p-8">
                 <div className="animate-pulse space-y-8">
@@ -116,6 +61,7 @@ export default function DashboardPage() {
                 <div>
                     <h1 className="text-2xl font-bold text-white tracking-tight">
                         Welcome back, <span className="text-indigo-400">{profile?.username || 'Trader'}</span>
+                        {isFetching && <span className="ml-2 text-xs text-zinc-500">(syncing...)</span>}
                     </h1>
                     <p className="text-sm text-zinc-400 mt-1">
                         Market is <span className={cn("font-medium", market.isOpen ? "text-emerald-500" : "text-zinc-500")}>
