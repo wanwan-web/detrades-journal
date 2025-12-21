@@ -1,5 +1,5 @@
 import { createClient } from './supabase';
-import type { Trade, Profile, DailyRisk, TradeWithProfile, UserStats, TeamStats, TradeFormInput } from './types';
+import type { Trade, Profile, TradeWithProfile, UserStats, TeamStats, TradeFormInput, DailyPnL } from './types';
 
 // =====================================================
 // USER & PROFILE QUERIES
@@ -95,32 +95,28 @@ export async function getPendingReviews(): Promise<TradeWithProfile[]> {
     const { data, error } = await supabase
         .from('trades')
         .select(`*, profiles:user_id(username, full_name, avatar_url)`)
-        .eq('status', 'submitted')
+        .in('status', ['submitted', 'needs_improvement'])
         .order('created_at', { ascending: true });
 
     if (error) return [];
     return data;
 }
 
-export async function createTrade(input: TradeFormInput & { user_id: string; image_url?: string }): Promise<Trade | null> {
+export async function createTrade(input: TradeFormInput & { user_id: string; screenshot_url?: string }): Promise<Trade | null> {
     const supabase = createClient();
+
     const { data, error } = await supabase
         .from('trades')
         .insert({
             user_id: input.user_id,
             trade_date: input.trade_date,
-            session: input.session,
             pair: input.pair,
-            bias: input.bias,
-            bias_daily: input.bias_daily,
-            framework: input.framework,
-            profiling: input.profiling,
-            entry_model: input.entry_model,
             result: input.result,
             rr: input.rr,
-            mood: input.mood,
-            description: input.description,
-            image_url: input.image_url,
+            profiling: input.profiling || null,
+            description: input.description || null,
+            screenshot_url: input.screenshot_url || null,
+            status: 'submitted',
         })
         .select()
         .single();
@@ -132,19 +128,39 @@ export async function createTrade(input: TradeFormInput & { user_id: string; ima
     return data;
 }
 
+export async function updateTrade(tradeId: string, updates: Partial<Trade>): Promise<boolean> {
+    const supabase = createClient();
+    const { error } = await supabase
+        .from('trades')
+        .update(updates)
+        .eq('id', tradeId);
+
+    return !error;
+}
+
+export async function deleteTrade(tradeId: string): Promise<boolean> {
+    const supabase = createClient();
+    const { error } = await supabase
+        .from('trades')
+        .delete()
+        .eq('id', tradeId);
+
+    return !error;
+}
+
 export async function reviewTrade(
     tradeId: string,
     reviewerId: string,
     score: number,
-    notes: string,
-    status: 'reviewed' | 'revision' = 'reviewed'
+    feedback: string,
+    status: 'reviewed' | 'needs_improvement' = 'reviewed'
 ): Promise<boolean> {
     const supabase = createClient();
     const { error } = await supabase
         .from('trades')
         .update({
             mentor_score: score,
-            mentor_notes: notes,
+            mentor_feedback: feedback,
             status,
             reviewed_by: reviewerId,
             reviewed_at: new Date().toISOString(),
@@ -155,47 +171,15 @@ export async function reviewTrade(
 }
 
 // =====================================================
-// DAILY RISK QUERIES
-// =====================================================
-
-export async function getDailyRisk(userId: string, date: string): Promise<DailyRisk | null> {
-    const supabase = createClient();
-    const { data, error } = await supabase
-        .from('daily_risk')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('trade_date', date)
-        .single();
-
-    if (error) return null;
-    return data;
-}
-
-export async function getTodayRisk(userId: string): Promise<{ totalR: number; isLocked: boolean }> {
-    const today = new Date().toISOString().split('T')[0];
-    const risk = await getDailyRisk(userId, today);
-
-    return {
-        totalR: risk?.total_rr ?? 0,
-        isLocked: risk?.is_locked ?? false,
-    };
-}
-
-// =====================================================
 // STATS QUERIES
 // =====================================================
 
 export async function getUserStats(userId: string): Promise<UserStats> {
     const supabase = createClient();
-
-    // Get all trades for user
     const { data: trades } = await supabase
         .from('trades')
-        .select('result, rr, mentor_score')
+        .select('rr, result, mentor_score')
         .eq('user_id', userId);
-
-    // Get today's risk
-    const todayRisk = await getTodayRisk(userId);
 
     if (!trades || trades.length === 0) {
         return {
@@ -204,26 +188,34 @@ export async function getUserStats(userId: string): Promise<UserStats> {
             winRate: 0,
             avgSopScore: 0,
             winStreak: 0,
-            currentDayR: todayRisk.totalR,
-            isLocked: todayRisk.isLocked,
+            currentDayR: 0,
         };
     }
 
-    const wins = trades.filter((t: Trade) => t.result === 'Win').length;
-    const totalR = trades.reduce((sum: number, t: Trade) => sum + (t.rr || 0), 0);
-    const scoredTrades = trades.filter((t: Trade) => t.mentor_score !== null);
+    const wins = trades.filter((t: { result: string }) => t.result === 'Win').length;
+    const totalR = trades.reduce((sum: number, t: { rr: number }) => sum + (t.rr || 0), 0);
+    const scoredTrades = trades.filter((t: { mentor_score: number | null }) => t.mentor_score !== null);
     const avgSop = scoredTrades.length > 0
-        ? scoredTrades.reduce((sum: number, t: Trade) => sum + (t.mentor_score || 0), 0) / scoredTrades.length
+        ? scoredTrades.reduce((sum: number, t: { mentor_score: number | null }) => sum + (t.mentor_score || 0), 0) / scoredTrades.length
         : 0;
+
+    // Calculate today's R
+    const today = new Date().toISOString().split('T')[0];
+    const { data: todayTrades } = await supabase
+        .from('trades')
+        .select('rr')
+        .eq('user_id', userId)
+        .eq('trade_date', today);
+
+    const currentDayR = todayTrades?.reduce((sum: number, t: { rr: number }) => sum + (t.rr || 0), 0) ?? 0;
 
     return {
         totalTrades: trades.length,
-        totalR: Math.round(totalR * 10) / 10,
+        totalR: Math.round(totalR * 100) / 100,
         winRate: Math.round((wins / trades.length) * 100),
         avgSopScore: Math.round(avgSop * 10) / 10,
-        winStreak: 0, // TODO: Calculate actual streak
-        currentDayR: todayRisk.totalR,
-        isLocked: todayRisk.isLocked,
+        winStreak: 0, // TODO: calculate properly
+        currentDayR: Math.round(currentDayR * 100) / 100,
     };
 }
 
@@ -240,21 +232,14 @@ export async function getTeamStats(): Promise<TeamStats> {
     // Get today's trades
     const { data: todayTrades } = await supabase
         .from('trades')
-        .select('rr, result, user_id')
+        .select('user_id, rr, result')
         .eq('trade_date', today);
-
-    // Get locked members today
-    const { data: lockedRisks } = await supabase
-        .from('daily_risk')
-        .select('user_id')
-        .eq('trade_date', today)
-        .eq('is_locked', true);
 
     // Get pending reviews
     const { data: pending } = await supabase
         .from('trades')
         .select('id')
-        .eq('status', 'submitted');
+        .in('status', ['submitted', 'needs_improvement']);
 
     const teamTotalR = todayTrades?.reduce((sum: number, t: { rr: number }) => sum + (t.rr || 0), 0) ?? 0;
     const wins = todayTrades?.filter((t: { result: string }) => t.result === 'Win').length ?? 0;
@@ -265,9 +250,56 @@ export async function getTeamStats(): Promise<TeamStats> {
         activeToday: activeUsers.size,
         teamTotalR: Math.round(teamTotalR * 10) / 10,
         teamWinRate: todayTrades?.length ? Math.round((wins / todayTrades.length) * 100) : 0,
-        lockedMembers: lockedRisks?.length ?? 0,
         pendingReviews: pending?.length ?? 0,
     };
+}
+
+// =====================================================
+// CALENDAR QUERIES
+// =====================================================
+
+export async function getMonthlyPnL(userId: string, year: number, month: number): Promise<DailyPnL[]> {
+    const supabase = createClient();
+    const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+    const endDate = `${year}-${String(month).padStart(2, '0')}-31`;
+
+    const { data: trades } = await supabase
+        .from('trades')
+        .select('trade_date, rr, result')
+        .eq('user_id', userId)
+        .gte('trade_date', startDate)
+        .lte('trade_date', endDate)
+        .order('trade_date', { ascending: true });
+
+    if (!trades) return [];
+
+    // Group by date
+    const grouped = trades.reduce((acc: Record<string, DailyPnL>, trade: { trade_date: string; rr: number; result: string }) => {
+        const date = trade.trade_date;
+        if (!acc[date]) {
+            acc[date] = { date, totalR: 0, trades: 0, wins: 0, losses: 0 };
+        }
+        acc[date].totalR += trade.rr;
+        acc[date].trades += 1;
+        if (trade.result === 'Win') acc[date].wins += 1;
+        else acc[date].losses += 1;
+        return acc;
+    }, {});
+
+    return Object.values(grouped);
+}
+
+export async function getTradesByDate(userId: string, date: string): Promise<Trade[]> {
+    const supabase = createClient();
+    const { data, error } = await supabase
+        .from('trades')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('trade_date', date)
+        .order('created_at', { ascending: false });
+
+    if (error) return [];
+    return data;
 }
 
 // =====================================================
@@ -331,30 +363,6 @@ export async function getLeaderboard(): Promise<(Profile & { totalR: number; tra
     return leaderboard.sort((a, b) => b.totalR - a.totalR);
 }
 
-export async function getSessionStats(userId?: string) {
-    const supabase = createClient();
-    let query = supabase.from('trades').select('session, rr, result');
-    if (userId) query = query.eq('user_id', userId);
-
-    const { data } = await query;
-    if (!data) return { london: { totalR: 0, winRate: 0, count: 0 }, newYork: { totalR: 0, winRate: 0, count: 0 } };
-
-    const londonTrades = data.filter((t: { session: string }) => t.session === 'London');
-    const nyTrades = data.filter((t: { session: string }) => t.session === 'New York');
-
-    type TradeData = { session: string; rr: number; result: string };
-    const calcStats = (trades: TradeData[]) => ({
-        totalR: Math.round(trades.reduce((sum: number, t: TradeData) => sum + (t.rr || 0), 0) * 10) / 10,
-        winRate: trades.length ? Math.round((trades.filter((t: TradeData) => t.result === 'Win').length / trades.length) * 100) : 0,
-        count: trades.length,
-    });
-
-    return {
-        london: calcStats(londonTrades),
-        newYork: calcStats(nyTrades),
-    };
-}
-
 export async function getProfilingStats(userId?: string) {
     const supabase = createClient();
     let query = supabase.from('trades').select('profiling, rr, result');
@@ -365,8 +373,9 @@ export async function getProfilingStats(userId?: string) {
 
     type ProfilingTrade = { profiling: string; rr: number; result: string };
     const grouped = data.reduce((acc: Record<string, ProfilingTrade[]>, t: ProfilingTrade) => {
-        if (!acc[t.profiling]) acc[t.profiling] = [];
-        acc[t.profiling].push(t);
+        const prof = t.profiling || 'Unspecified';
+        if (!acc[prof]) acc[prof] = [];
+        acc[prof].push(t);
         return acc;
     }, {} as Record<string, ProfilingTrade[]>);
 

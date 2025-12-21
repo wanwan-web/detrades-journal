@@ -1,304 +1,238 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { TrendingUp, TrendingDown, BarChart3, Target, Calendar } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { TrendingUp, TrendingDown, BarChart3, Target, Calendar, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/hooks/useUser";
-import { getUserStats, getSessionStats, getProfilingStats, getUserTrades } from "@/lib/queries";
+import { getUserStats, getProfilingStats, getUserTrades } from "@/lib/queries";
 import type { UserStats, Trade } from "@/lib/types";
 
 export default function AnalyticsPage() {
     const { user, profile, isLoading: userLoading } = useUser();
-    const [stats, setStats] = useState<UserStats | null>(null);
-    const [sessionStats, setSessionStats] = useState<{ london: { totalR: number; winRate: number; count: number }; newYork: { totalR: number; winRate: number; count: number } } | null>(null);
-    const [profilingStats, setProfilingStats] = useState<{ profiling: string; count: number; totalR: number; winRate: number }[]>([]);
-    const [trades, setTrades] = useState<Trade[]>([]);
-    const [dataLoaded, setDataLoaded] = useState(false);
-    const [loadedUserId, setLoadedUserId] = useState<string | null>(null);
 
-    // Load data when user is available
-    useEffect(() => {
-        if (userLoading) return;
-        if (!user) {
-            setDataLoaded(true);
-            return;
-        }
-        if (dataLoaded && loadedUserId === user.id) return;
+    const { data: stats } = useQuery<UserStats>({
+        queryKey: ['user-stats', user?.id],
+        queryFn: () => getUserStats(user!.id),
+        enabled: !!user?.id,
+        staleTime: 30 * 1000,
+    });
 
-        let cancelled = false;
+    const { data: profilingStats = [] } = useQuery({
+        queryKey: ['profiling-stats', user?.id],
+        queryFn: () => getProfilingStats(user!.id),
+        enabled: !!user?.id,
+        staleTime: 30 * 1000,
+    });
 
-        Promise.all([
-            getUserStats(user.id),
-            getSessionStats(user.id),
-            getProfilingStats(user.id),
-            getUserTrades(user.id),
-        ])
-            .then(([userStats, sessions, profiling, allTrades]) => {
-                if (!cancelled) {
-                    setStats(userStats);
-                    setSessionStats(sessions);
-                    setProfilingStats(profiling);
-                    setTrades(allTrades);
-                    setLoadedUserId(user.id);
-                    setDataLoaded(true);
-                }
-            })
-            .catch((error) => {
-                console.error('Error loading analytics:', error);
-                if (!cancelled) setDataLoaded(true);
-            });
+    const { data: trades = [], isLoading } = useQuery<Trade[]>({
+        queryKey: ['user-trades-analytics', user?.id],
+        queryFn: () => getUserTrades(user!.id),
+        enabled: !!user?.id,
+        staleTime: 30 * 1000,
+    });
 
-        return () => { cancelled = true; };
-    }, [user?.id, userLoading, dataLoaded, loadedUserId]);
-
-    // Calculate monthly stats
+    // Calculate monthly stats from trades
     const getMonthlyStats = () => {
         const monthlyData: Record<string, { trades: number; totalR: number; wins: number }> = {};
 
-        trades.forEach(trade => {
-            const month = trade.trade_date.slice(0, 7); // YYYY-MM
-            if (!monthlyData[month]) monthlyData[month] = { trades: 0, totalR: 0, wins: 0 };
-            monthlyData[month].trades++;
+        trades.forEach((trade: Trade) => {
+            const month = trade.trade_date.substring(0, 7); // YYYY-MM
+            if (!monthlyData[month]) {
+                monthlyData[month] = { trades: 0, totalR: 0, wins: 0 };
+            }
+            monthlyData[month].trades += 1;
             monthlyData[month].totalR += trade.rr;
-            if (trade.result === 'Win') monthlyData[month].wins++;
+            if (trade.result === 'Win') monthlyData[month].wins += 1;
         });
 
         return Object.entries(monthlyData)
-            .sort(([a], [b]) => a.localeCompare(b))
-            .slice(-6) // Last 6 months
             .map(([month, data]) => ({
-                month: new Date(month + '-01').toLocaleDateString('en-US', { month: 'short' }),
+                month,
                 ...data,
-                winRate: data.trades ? Math.round((data.wins / data.trades) * 100) : 0,
-            }));
+                winRate: data.trades > 0 ? Math.round((data.wins / data.trades) * 100) : 0,
+            }))
+            .sort((a, b) => b.month.localeCompare(a.month))
+            .slice(0, 6);
     };
 
     const monthlyStats = getMonthlyStats();
     const maxMonthlyR = Math.max(...monthlyStats.map(m => Math.abs(m.totalR)), 1);
 
-    if (userLoading || !dataLoaded) {
+    if (userLoading || isLoading) {
         return (
             <div className="max-w-7xl mx-auto p-8">
-                <div className="animate-pulse space-y-6">
-                    <div className="h-10 bg-zinc-800 rounded w-1/3" />
+                <div className="space-y-6">
+                    <div className="h-10 skeleton w-1/3 rounded" />
                     <div className="grid grid-cols-3 gap-6">
-                        {[1, 2, 3].map(i => <div key={i} className="h-40 bg-zinc-800 rounded-xl" />)}
+                        {[1, 2, 3].map(i => <div key={i} className="h-40 skeleton rounded-xl" />)}
                     </div>
-                    <div className="h-80 bg-zinc-800 rounded-xl" />
-                </div>
-            </div>
-        );
-    }
-
-    if (!stats || trades.length === 0) {
-        return (
-            <div className="max-w-7xl mx-auto p-8">
-                <h1 className="text-2xl font-bold text-white tracking-tight mb-2">Performance Analytics</h1>
-                <div className="border border-dashed border-zinc-800 rounded-xl p-12 text-center mt-8">
-                    <BarChart3 className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
-                    <p className="text-zinc-400 text-sm mb-2">No trading data yet</p>
-                    <p className="text-zinc-500 text-xs">Start logging trades to see your analytics.</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="max-w-7xl mx-auto p-8 space-y-6">
+        <div className="max-w-7xl mx-auto p-8 page-transition">
             {/* Header */}
-            <div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">Performance Analytics</h1>
-                <p className="text-sm text-zinc-400">
-                    Analyzing <span className="text-indigo-400 font-bold">{stats.totalTrades} trades</span> from your journal
-                </p>
+            <div className="mb-8">
+                <h1 className="text-2xl font-bold text-foreground tracking-tight">Performance Analytics</h1>
+                <p className="text-sm text-muted-foreground mt-1">Deep dive into your trading performance</p>
             </div>
 
-            {/* Top Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/30">
-                    <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Total P&L</p>
-                    <div className="mt-2 flex items-baseline gap-2">
-                        <span className={cn("font-mono text-3xl font-bold", stats.totalR >= 0 ? "text-emerald-500" : "text-rose-500")}>
-                            {stats.totalR >= 0 ? "+" : ""}{stats.totalR}R
-                        </span>
-                    </div>
+            {/* Overview Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div className="p-5 rounded-xl border border-border bg-card">
+                    <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Total Trades</p>
+                    <p className="text-3xl font-mono font-bold text-foreground mt-2">{stats?.totalTrades ?? 0}</p>
                 </div>
-                <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/30">
-                    <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Win Rate</p>
-                    <div className="mt-2 flex items-baseline gap-2">
-                        <span className="font-mono text-3xl font-bold text-white">{stats.winRate}%</span>
-                        {stats.winRate >= 50 ? <TrendingUp className="h-4 w-4 text-emerald-500" /> : <TrendingDown className="h-4 w-4 text-rose-500" />}
-                    </div>
+                <div className="p-5 rounded-xl border border-border bg-card">
+                    <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Win Rate</p>
+                    <p className={cn("text-3xl font-mono font-bold mt-2", (stats?.winRate ?? 0) >= 50 ? "text-emerald-500" : "text-rose-500")}>
+                        {stats?.winRate ?? 0}%
+                    </p>
                 </div>
-                <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/30">
-                    <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Avg SOP Score</p>
-                    <div className="mt-2 flex items-baseline gap-2">
-                        <span className="font-mono text-3xl font-bold text-amber-500">{stats.avgSopScore || '-'}</span>
-                        <span className="text-xs text-zinc-500">/ 5</span>
-                    </div>
+                <div className="p-5 rounded-xl border border-border bg-card">
+                    <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Total P&L</p>
+                    <p className={cn("text-3xl font-mono font-bold mt-2", (stats?.totalR ?? 0) >= 0 ? "text-emerald-500" : "text-rose-500")}>
+                        {(stats?.totalR ?? 0) >= 0 ? '+' : ''}{stats?.totalR?.toFixed(1) ?? 0}R
+                    </p>
                 </div>
-                <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/30">
-                    <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Total Trades</p>
-                    <div className="mt-2 flex items-baseline gap-2">
-                        <span className="font-mono text-3xl font-bold text-white">{stats.totalTrades}</span>
-                    </div>
+                <div className="p-5 rounded-xl border border-border bg-card">
+                    <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Avg SOP Score</p>
+                    <p className="text-3xl font-mono font-bold text-amber-500 mt-2">{stats?.avgSopScore?.toFixed(1) ?? "-"}</p>
                 </div>
             </div>
 
-            {/* Session Comparison */}
-            {sessionStats && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-900/30">
-                        <div className="flex items-center gap-2 mb-4">
-                            <Calendar className="h-4 w-4 text-indigo-500" />
-                            <h3 className="text-sm font-semibold text-zinc-200">Session Comparison</h3>
-                        </div>
-                        <div className="space-y-6">
-                            {/* London */}
-                            <div>
-                                <div className="flex justify-between text-xs mb-2">
-                                    <span className="text-white font-medium">London Session</span>
-                                    <span className="text-zinc-400">{sessionStats.london.count} trades</span>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <p className="text-[10px] text-zinc-500 uppercase mb-1">Win Rate</p>
-                                        <div className="flex items-center gap-2">
-                                            <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                                                <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${sessionStats.london.winRate}%` }} />
-                                            </div>
-                                            <span className="text-xs font-mono text-indigo-400">{sessionStats.london.winRate}%</span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] text-zinc-500 uppercase mb-1">Total R</p>
-                                        <p className={cn("text-lg font-mono font-bold", sessionStats.london.totalR >= 0 ? "text-emerald-500" : "text-rose-500")}>
-                                            {sessionStats.london.totalR >= 0 ? "+" : ""}{sessionStats.london.totalR}R
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            {/* New York */}
-                            <div>
-                                <div className="flex justify-between text-xs mb-2">
-                                    <span className="text-white font-medium">New York Session</span>
-                                    <span className="text-zinc-400">{sessionStats.newYork.count} trades</span>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <p className="text-[10px] text-zinc-500 uppercase mb-1">Win Rate</p>
-                                        <div className="flex items-center gap-2">
-                                            <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                                                <div className="h-full bg-purple-500 rounded-full" style={{ width: `${sessionStats.newYork.winRate}%` }} />
-                                            </div>
-                                            <span className="text-xs font-mono text-purple-400">{sessionStats.newYork.winRate}%</span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] text-zinc-500 uppercase mb-1">Total R</p>
-                                        <p className={cn("text-lg font-mono font-bold", sessionStats.newYork.totalR >= 0 ? "text-emerald-500" : "text-rose-500")}>
-                                            {sessionStats.newYork.totalR >= 0 ? "+" : ""}{sessionStats.newYork.totalR}R
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Entry Model Performance */}
-                    <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-900/30">
-                        <div className="flex items-center gap-2 mb-4">
-                            <Target className="h-4 w-4 text-indigo-500" />
-                            <h3 className="text-sm font-semibold text-zinc-200">Entry Model Performance</h3>
-                        </div>
-                        <div className="space-y-3">
-                            {profilingStats.length > 0 ? profilingStats.map((stat, i) => (
-                                <div key={i} className="flex items-center gap-3">
-                                    <div className="flex-1">
-                                        <div className="flex justify-between text-xs mb-1">
-                                            <span className="text-zinc-300 truncate">{stat.profiling}</span>
-                                            <span className="text-zinc-500">{stat.count} trades</span>
-                                        </div>
-                                        <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-                                            <div
-                                                className={cn("h-full rounded-full", stat.totalR >= 0 ? "bg-emerald-500" : "bg-rose-500")}
-                                                style={{ width: `${Math.min(Math.abs(stat.totalR) * 10, 100)}%` }}
-                                            />
-                                        </div>
-                                    </div>
-                                    <span className={cn("text-xs font-mono font-bold w-12 text-right", stat.totalR >= 0 ? "text-emerald-500" : "text-rose-500")}>
-                                        {stat.totalR >= 0 ? "+" : ""}{stat.totalR}R
-                                    </span>
-                                </div>
-                            )) : (
-                                <p className="text-zinc-500 text-sm text-center py-4">No data yet</p>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Monthly Progress */}
-            {monthlyStats.length > 0 && (
-                <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-900/30">
+            {/* Charts Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Monthly Performance */}
+                <div className="rounded-xl border border-border bg-card p-6">
                     <div className="flex items-center gap-2 mb-6">
-                        <BarChart3 className="h-4 w-4 text-indigo-500" />
-                        <h3 className="text-sm font-semibold text-zinc-200">Monthly Progress</h3>
+                        <Calendar className="h-4 w-4 text-primary" />
+                        <h3 className="text-sm font-semibold text-foreground">Monthly Performance</h3>
                     </div>
-                    <div className="flex items-end justify-around gap-4 h-48">
-                        {monthlyStats.map((month, i) => (
-                            <div key={i} className="flex flex-col items-center flex-1">
-                                <div className="w-full flex flex-col items-center justify-end h-36">
-                                    <span className={cn("text-xs font-mono mb-1", month.totalR >= 0 ? "text-emerald-500" : "text-rose-500")}>
-                                        {month.totalR >= 0 ? "+" : ""}{month.totalR.toFixed(1)}R
-                                    </span>
-                                    <div
-                                        className={cn(
-                                            "w-full max-w-12 rounded-t transition-all",
-                                            month.totalR >= 0 ? "bg-emerald-500/30 border border-emerald-500/50" : "bg-rose-500/30 border border-rose-500/50"
-                                        )}
-                                        style={{ height: `${(Math.abs(month.totalR) / maxMonthlyR) * 100}%`, minHeight: 4 }}
-                                    />
-                                </div>
-                                <div className="mt-2 text-center">
-                                    <p className="text-xs text-zinc-400">{month.month}</p>
-                                    <p className="text-[10px] text-zinc-600">{month.trades} trades</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
 
-            {/* Trade Distribution */}
-            <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-900/30">
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-semibold text-zinc-200">Trade Distribution</h3>
-                    <div className="flex gap-4 text-xs">
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500" /> Win</span>
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-500" /> Loss</span>
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500" /> BE</span>
-                    </div>
+                    {monthlyStats.length === 0 ? (
+                        <p className="text-center text-muted-foreground text-sm py-8">No data yet</p>
+                    ) : (
+                        <div className="space-y-4">
+                            {monthlyStats.map((month) => (
+                                <div key={month.month} className="flex items-center gap-4">
+                                    <div className="w-20 text-xs text-muted-foreground font-mono">{month.month}</div>
+                                    <div className="flex-1 h-8 bg-muted/30 rounded-lg overflow-hidden relative">
+                                        <div
+                                            className={cn(
+                                                "h-full rounded-lg transition-all",
+                                                month.totalR >= 0 ? "bg-emerald-500/80" : "bg-rose-500/80"
+                                            )}
+                                            style={{ width: `${Math.abs(month.totalR) / maxMonthlyR * 100}%` }}
+                                        />
+                                        <span className={cn(
+                                            "absolute right-2 top-1/2 -translate-y-1/2 text-xs font-mono font-bold",
+                                            month.totalR >= 0 ? "text-emerald-400" : "text-rose-400"
+                                        )}>
+                                            {month.totalR >= 0 ? '+' : ''}{month.totalR.toFixed(1)}R
+                                        </span>
+                                    </div>
+                                    <div className="w-16 text-right text-xs text-muted-foreground">
+                                        {month.trades} trades
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
-                <div className="flex flex-wrap gap-2">
-                    {trades.slice(0, 50).map((trade, i) => (
-                        <div
-                            key={i}
-                            className={cn(
-                                "w-8 h-8 rounded border flex items-center justify-center text-[10px] font-mono",
-                                trade.result === 'Win' ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-500" :
-                                    trade.result === 'Lose' ? "bg-rose-500/10 border-rose-500/30 text-rose-500" :
-                                        "bg-amber-500/10 border-amber-500/30 text-amber-500"
-                            )}
-                            title={`${trade.pair} ${trade.rr >= 0 ? '+' : ''}${trade.rr}R`}
-                        >
-                            {trade.rr >= 0 ? '+' : ''}{trade.rr}
+
+                {/* Profiling Performance */}
+                <div className="rounded-xl border border-border bg-card p-6">
+                    <div className="flex items-center gap-2 mb-6">
+                        <Target className="h-4 w-4 text-primary" />
+                        <h3 className="text-sm font-semibold text-foreground">Performance by Profiling</h3>
+                    </div>
+
+                    {profilingStats.length === 0 ? (
+                        <p className="text-center text-muted-foreground text-sm py-8">No data yet</p>
+                    ) : (
+                        <div className="space-y-4">
+                            {profilingStats.map((stat) => (
+                                <div key={stat.profiling} className="p-4 rounded-lg bg-muted/20 border border-border/50">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-sm font-medium text-foreground">{stat.profiling}</span>
+                                        <span className={cn(
+                                            "text-sm font-mono font-bold",
+                                            stat.totalR >= 0 ? "text-emerald-500" : "text-rose-500"
+                                        )}>
+                                            {stat.totalR >= 0 ? '+' : ''}{stat.totalR.toFixed(1)}R
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                                        <span>{stat.count} trades</span>
+                                        <span>{stat.winRate}% win rate</span>
+                                    </div>
+                                    <div className="mt-2 h-1.5 bg-muted/30 rounded-full overflow-hidden">
+                                        <div
+                                            className="h-full bg-primary rounded-full"
+                                            style={{ width: `${stat.winRate}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                    {trades.length > 50 && (
-                        <div className="w-8 h-8 rounded border border-zinc-700 flex items-center justify-center text-[10px] text-zinc-500">
-                            +{trades.length - 50}
+                    )}
+                </div>
+            </div>
+
+            {/* Best/Worst Trades */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                {/* Best Trade */}
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                        <Trophy className="h-4 w-4 text-emerald-500" />
+                        <h3 className="text-sm font-semibold text-foreground">Best Trade</h3>
+                    </div>
+                    {trades.length > 0 ? (
+                        <div>
+                            {(() => {
+                                const best = trades.reduce((max, t) => t.rr > max.rr ? t : max, trades[0]);
+                                return (
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="font-mono font-medium text-foreground">{best.pair}</p>
+                                            <p className="text-xs text-muted-foreground">{best.trade_date}</p>
+                                        </div>
+                                        <p className="text-2xl font-mono font-bold text-emerald-500">+{best.rr.toFixed(2)}R</p>
+                                    </div>
+                                );
+                            })()}
                         </div>
+                    ) : (
+                        <p className="text-muted-foreground text-sm">No trades yet</p>
+                    )}
+                </div>
+
+                {/* Worst Trade */}
+                <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                        <TrendingDown className="h-4 w-4 text-rose-500" />
+                        <h3 className="text-sm font-semibold text-foreground">Worst Trade</h3>
+                    </div>
+                    {trades.length > 0 ? (
+                        <div>
+                            {(() => {
+                                const worst = trades.reduce((min, t) => t.rr < min.rr ? t : min, trades[0]);
+                                return (
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="font-mono font-medium text-foreground">{worst.pair}</p>
+                                            <p className="text-xs text-muted-foreground">{worst.trade_date}</p>
+                                        </div>
+                                        <p className="text-2xl font-mono font-bold text-rose-500">{worst.rr.toFixed(2)}R</p>
+                                    </div>
+                                );
+                            })()}
+                        </div>
+                    ) : (
+                        <p className="text-muted-foreground text-sm">No trades yet</p>
                     )}
                 </div>
             </div>

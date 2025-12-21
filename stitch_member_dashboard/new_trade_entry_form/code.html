@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>New Trade Entry Form - Detrades Journal</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6464f2",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101022",
+                        "surface-dark": "#1c1c27",
+                        "border-dark": "#3b3b54",
+                        "text-secondary": "#9d9db9"
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #101022; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #282839; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b3b54; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display antialiased overflow-hidden">
+<div class="flex h-screen w-full">
+<aside class="hidden lg:flex flex-col w-72 border-r border-border-dark bg-background-dark flex-shrink-0">
+<div class="flex flex-col h-full p-4 justify-between">
+<div class="flex flex-col gap-6">
+<div class="flex items-center gap-3 px-2">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-primary/20" data-alt="User profile avatar showing abstract geometric shapes" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCeTRvsWi2DZQWPyGMvMxQ8JyFgegXylqhXRnkqvOZGq8wjhM4OUL-7aNdoDTMNJT4s2p1nuGjCGM1zNYVRFn0mivBj97ArZ4mjYNYVSH0_Cna3nJ62T4_8JNfu6n5tdUVdWnWo7--xTfTpl77arLBfpBIFIuIV_VyU5_ZtTj51prKQKWYAtvdjOctcF_rgS0YLJTuyC1MUwcz9QS0v6gNvUAGTazWy87CKlk2k8tgfJoZw4Pbgqx0wu8pNYpoYaSpAMC57xUsbQzcn");'></div>
+<div class="flex flex-col">
+<h1 class="text-white text-base font-medium leading-normal">Detrades</h1>
+<p class="text-text-secondary text-xs font-normal leading-normal">Pro Account</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-dark hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-white transition-colors">dashboard</span>
+<span class="text-sm font-medium leading-normal">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-primary fill-1">book</span>
+<span class="text-sm font-medium leading-normal">Journal</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-dark hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-white transition-colors">show_chart</span>
+<span class="text-sm font-medium leading-normal">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-dark hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-white transition-colors">school</span>
+<span class="text-sm font-medium leading-normal">Mentorship</span>
+</a>
+</nav>
+</div>
+<div class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-dark hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-white transition-colors">settings</span>
+<span class="text-sm font-medium leading-normal">Settings</span>
+</a>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col h-full overflow-hidden relative">
+<div class="lg:hidden flex items-center justify-between p-4 border-b border-border-dark bg-background-dark">
+<span class="text-white font-bold text-lg">Detrades</span>
+<button class="text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-4 md:p-8 lg:px-12 scroll-smooth">
+<div class="max-w-[1400px] mx-auto flex flex-col gap-8 pb-12">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="text-text-secondary text-xs uppercase tracking-wider font-semibold">New Entry</span>
+</div>
+<h1 class="text-white text-2xl md:text-3xl font-bold tracking-tight">Log Trade</h1>
+</div>
+</div>
+<form class="flex flex-col lg:flex-row gap-6 w-full">
+<div class="flex flex-col gap-6 w-full lg:w-2/3">
+<div class="bg-surface-dark border border-border-dark rounded-xl p-6">
+<h2 class="text-text-secondary text-xs font-bold uppercase tracking-wider mb-6">Market Context</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-text-secondary text-sm font-medium">Trade Date</label>
+<input class="w-full h-10 rounded-lg bg-background-dark border border-border-dark text-white px-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none appearance-none [color-scheme:dark]" type="date" value="2025-12-21"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-text-secondary text-sm font-medium">Session</label>
+<div class="relative">
+<select class="w-full h-10 rounded-lg bg-background-dark border border-border-dark text-white px-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none appearance-none cursor-pointer">
+<option>London Session</option>
+<option>New York Session</option>
+<option>Asian Session</option>
+</select>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-text-secondary">
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-text-secondary text-sm font-medium">Instrument</label>
+<div class="relative">
+<select class="w-full h-10 rounded-lg bg-background-dark border border-border-dark text-white px-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none appearance-none cursor-pointer">
+<option>XAUUSD</option>
+<option>EURUSD</option>
+<option>GBPUSD</option>
+<option>BTCUSD</option>
+</select>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-text-secondary">
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-text-secondary text-sm font-medium">Daily Bias</label>
+<div class="flex h-10 w-full rounded-lg bg-background-dark p-1 border border-border-dark">
+<label class="flex-1 cursor-pointer">
+<input class="peer sr-only" name="daily_bias" type="radio" value="Bullish"/>
+<div class="h-full w-full flex items-center justify-center rounded text-text-secondary text-sm font-medium transition-all peer-checked:bg-surface-dark peer-checked:text-white peer-checked:shadow-sm hover:text-white">
+                                                Bullish
+                                            </div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="peer sr-only" name="daily_bias" type="radio" value="Bearish"/>
+<div class="h-full w-full flex items-center justify-center rounded text-text-secondary text-sm font-medium transition-all peer-checked:bg-surface-dark peer-checked:text-white peer-checked:shadow-sm hover:text-white">
+                                                Bearish
+                                            </div>
+</label>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-dark border border-border-dark rounded-xl p-6">
+<h2 class="text-text-secondary text-xs font-bold uppercase tracking-wider mb-6">Execution Logic</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-text-secondary text-sm font-medium">Bias Daily Type</label>
+<div class="relative">
+<select class="w-full h-10 rounded-lg bg-background-dark border border-border-dark text-white px-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none appearance-none cursor-pointer text-text-secondary/80">
+<option disabled="" selected="">Select type...</option>
+<option>Expansion</option>
+<option>Retracement</option>
+<option>Consolidation</option>
+</select>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-text-secondary">
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-text-secondary text-sm font-medium">Framework</label>
+<div class="relative">
+<select class="w-full h-10 rounded-lg bg-background-dark border border-border-dark text-white px-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none appearance-none cursor-pointer text-text-secondary/80">
+<option disabled="" selected="">Select framework...</option>
+<option>ICT 2022</option>
+<option>Standard Deviation</option>
+<option>MMXM</option>
+</select>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-text-secondary">
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-text-secondary text-sm font-medium">Profiling</label>
+<div class="relative">
+<select class="w-full h-10 rounded-lg bg-background-dark border border-border-dark text-white px-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none appearance-none cursor-pointer text-text-secondary/80">
+<option disabled="" selected="">Select profiling...</option>
+<option>Judas Swing</option>
+<option>Classic Tuesday</option>
+</select>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-text-secondary">
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-text-secondary text-sm font-medium">Entry Model</label>
+<div class="relative">
+<select class="w-full h-10 rounded-lg bg-background-dark border border-border-dark text-white px-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none appearance-none cursor-pointer text-text-secondary/80">
+<option disabled="" selected="">Select profiling first...</option>
+<option>FVG Entry</option>
+<option>Order Block</option>
+</select>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-text-secondary">
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-dark border border-border-dark rounded-xl p-6">
+<h2 class="text-text-secondary text-xs font-bold uppercase tracking-wider mb-6">Outcome</h2>
+<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-text-secondary text-sm font-medium">Trade Result</label>
+<div class="grid grid-cols-2 gap-4">
+<label class="cursor-pointer">
+<input class="peer sr-only" name="result" type="radio" value="WIN"/>
+<div class="flex flex-col items-center justify-center p-4 rounded-lg border border-border-dark bg-background-dark hover:bg-surface-dark transition-all peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:text-primary">
+<span class="material-symbols-outlined mb-1">check</span>
+<span class="text-xs font-bold">WIN</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="result" type="radio" value="LOSE"/>
+<div class="flex flex-col items-center justify-center p-4 rounded-lg border border-border-dark bg-background-dark hover:bg-surface-dark transition-all peer-checked:border-red-500 peer-checked:bg-red-500/10 peer-checked:text-red-500">
+<span class="material-symbols-outlined mb-1">close</span>
+<span class="text-xs font-bold">LOSE</span>
+</div>
+</label>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-text-secondary text-sm font-medium">Risk Reward (R)</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary text-sm font-mono">R</span>
+<input class="w-full h-10 rounded-lg bg-background-dark border border-border-dark text-white pl-8 pr-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none placeholder:text-text-secondary/30" placeholder="e.g. 2.5" step="0.1" type="number"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-text-secondary text-sm font-medium">Mental State</label>
+<div class="relative">
+<select class="w-full h-10 rounded-lg bg-background-dark border border-border-dark text-white px-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none appearance-none cursor-pointer text-text-secondary/80">
+<option disabled="" selected="">How did you feel?</option>
+<option>Calm / Focused</option>
+<option>Anxious / Fearful</option>
+<option>Greedy / Impatient</option>
+<option>Revenge Trading</option>
+</select>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-text-secondary">
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-6 w-full lg:w-1/3">
+<div class="bg-surface-dark border border-border-dark rounded-xl p-6 h-[340px] flex flex-col">
+<h2 class="text-text-secondary text-xs font-bold uppercase tracking-wider mb-6">Chart Evidence</h2>
+<div class="flex-1 w-full rounded-lg border-2 border-dashed border-border-dark bg-background-dark/30 hover:bg-background-dark/50 transition-colors cursor-pointer group flex flex-col items-center justify-center p-6 text-center">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors text-3xl mb-3">upload_file</span>
+<p class="text-white text-sm font-medium mb-1">Click or Drag Screenshot</p>
+<p class="text-text-secondary text-[10px]">Max 2MB (WebP/JPG)</p>
+</div>
+</div>
+<div class="bg-surface-dark border border-border-dark rounded-xl p-6 flex flex-col flex-1 min-h-[250px]">
+<h2 class="text-text-secondary text-xs font-bold uppercase tracking-wider mb-6">Trader's Note</h2>
+<textarea class="flex-1 w-full rounded-lg bg-background-dark border border-border-dark text-white p-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none placeholder:text-text-secondary/40 resize-none text-sm leading-relaxed" placeholder="Describe your execution logic, emotions, or mistakes..."></textarea>
+</div>
+<div class="flex flex-col gap-3 mt-auto">
+<button class="w-full py-3.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-medium shadow-lg shadow-primary/20 transition-all text-sm flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined text-lg">send</span>
+                                Log Trade
+                            </button>
+<div class="flex items-center justify-center gap-2 text-text-secondary">
+<span class="material-symbols-outlined text-xs">lock</span>
+<span class="text-[10px]">Trade will be submitted for mentor review</span>
+</div>
+</div>
+</div>
+</form>
+</div>
+</div>
+</main>
+</div>
+</body></html>

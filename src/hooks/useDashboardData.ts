@@ -1,15 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { getUserStats, getUserTrades, getSessionStats } from "@/lib/queries";
-import type { Trade, UserStats } from "@/lib/types";
+import { getUserStats, getUserTrades, getMonthlyPnL, getTradesByDate } from "@/lib/queries";
+import type { Trade, UserStats, DailyPnL } from "@/lib/types";
 
 interface DashboardData {
     stats: UserStats | null;
     recentTrades: Trade[];
     allTrades: Trade[];
-    sessionStats: {
-        london: { totalR: number; winRate: number; count: number };
-        newYork: { totalR: number; winRate: number; count: number };
-    } | null;
 }
 
 export function useDashboardData(userId: string | undefined) {
@@ -21,26 +17,47 @@ export function useDashboardData(userId: string | undefined) {
                     stats: null,
                     recentTrades: [],
                     allTrades: [],
-                    sessionStats: null,
                 };
             }
 
-            const [stats, recentTrades, allTrades, sessionStats] = await Promise.all([
+            const [stats, recentTrades, allTrades] = await Promise.all([
                 getUserStats(userId),
                 getUserTrades(userId, 5),
                 getUserTrades(userId),
-                getSessionStats(userId),
             ]);
 
             return {
                 stats,
                 recentTrades,
                 allTrades,
-                sessionStats,
             };
         },
         enabled: !!userId,
-        staleTime: 30 * 1000, // 30 seconds
+        staleTime: 30 * 1000,
         refetchOnWindowFocus: true,
+    });
+}
+
+export function useCalendarData(userId: string | undefined, year: number, month: number) {
+    return useQuery<DailyPnL[]>({
+        queryKey: ['calendar', userId, year, month],
+        queryFn: async () => {
+            if (!userId) return [];
+            return getMonthlyPnL(userId, year, month);
+        },
+        enabled: !!userId,
+        staleTime: 60 * 1000, // 1 minute
+    });
+}
+
+export function useTradesByDate(userId: string | undefined, date: string | null) {
+    return useQuery<Trade[]>({
+        queryKey: ['trades-by-date', userId, date],
+        queryFn: async () => {
+            if (!userId || !date) return [];
+            return getTradesByDate(userId, date);
+        },
+        enabled: !!userId && !!date,
+        staleTime: 30 * 1000,
     });
 }

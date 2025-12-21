@@ -1,81 +1,82 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { Star, PlusCircle, Check, X, Minus, ArrowRight, Activity } from "lucide-react";
+import { PlusCircle, Check, X, ArrowRight, TrendingUp } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
-import { RiskGuard } from "@/components/dashboard/RiskGuard";
 import { EquityCurve } from "@/components/dashboard/EquityCurve";
+import { CalendarWidget } from "@/components/dashboard/CalendarWidget";
+import { WinrateWidget } from "@/components/dashboard/WinrateWidget";
 import { useUser } from "@/hooks/useUser";
-import { useDashboardData } from "@/hooks/useDashboardData";
-import { isMarketOpen } from "@/lib/date-utils";
+import { useDashboardData, useCalendarData } from "@/hooks/useDashboardData";
 import { cn } from "@/lib/utils";
+import type { Trade } from "@/lib/types";
 
 export default function DashboardPage() {
     const { user, profile, isLoading: userLoading } = useUser();
     const { data, isLoading: dataLoading, isFetching } = useDashboardData(user?.id);
 
-    const market = isMarketOpen();
+    const now = new Date();
+    const [calendarYear, setCalendarYear] = useState(now.getFullYear());
+    const [calendarMonth, setCalendarMonth] = useState(now.getMonth() + 1);
+    const [selectedDateTrades, setSelectedDateTrades] = useState<Trade[]>([]);
+
+    const { data: calendarData } = useCalendarData(user?.id, calendarYear, calendarMonth);
 
     const stats = data?.stats ?? null;
     const recentTrades = data?.recentTrades ?? [];
     const allTrades = data?.allTrades ?? [];
-    const sessionStats = data?.sessionStats ?? null;
 
-    const getResultIcon = (r: "Win" | "Lose" | "BE") => {
+    const getResultIcon = (r: "Win" | "Lose") => {
         if (r === "Win") return <Check className="h-4 w-4 text-emerald-500" />;
-        if (r === "Lose") return <X className="h-4 w-4 text-rose-500" />;
-        return <Minus className="h-4 w-4 text-amber-500" />;
+        return <X className="h-4 w-4 text-rose-500" />;
     };
 
-    const getResultColors = (r: "Win" | "Lose" | "BE") => {
+    const getResultColors = (r: "Win" | "Lose") => {
         if (r === "Win") return "bg-emerald-500/10 border-emerald-500/20";
-        if (r === "Lose") return "bg-rose-500/10 border-rose-500/20";
-        return "bg-amber-500/10 border-amber-500/20";
+        return "bg-rose-500/10 border-rose-500/20";
     };
 
     const getRRColor = (rr: number) => {
         if (rr > 0) return "text-emerald-500";
         if (rr < 0) return "text-rose-500";
-        return "text-zinc-400";
+        return "text-muted-foreground";
     };
 
-    // Show loading only on initial load, not during background refetch
+    // Calculate total wins for winrate widget
+    const totalWins = allTrades.filter(t => t.result === 'Win').length;
+
+    // Show loading only on initial load
     if (userLoading || (dataLoading && !data)) {
         return (
             <div className="max-w-7xl mx-auto p-8">
-                <div className="animate-pulse space-y-8">
-                    <div className="h-10 bg-zinc-800 rounded w-1/3" />
+                <div className="space-y-8">
+                    <div className="h-10 skeleton w-1/3" />
                     <div className="grid grid-cols-4 gap-4">
-                        {[1, 2, 3, 4].map(i => <div key={i} className="h-28 bg-zinc-800 rounded-xl" />)}
+                        {[1, 2, 3, 4].map(i => <div key={i} className="h-28 skeleton rounded-xl" />)}
                     </div>
-                    <div className="h-80 bg-zinc-800 rounded-xl" />
+                    <div className="h-80 skeleton rounded-xl" />
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="max-w-7xl mx-auto p-8 space-y-8">
+        <div className="max-w-7xl mx-auto p-8 space-y-8 page-transition">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-white tracking-tight">
-                        Welcome back, <span className="text-indigo-400">{profile?.username || 'Trader'}</span>
-                        {isFetching && <span className="ml-2 text-xs text-zinc-500">(syncing...)</span>}
+                    <h1 className="text-2xl font-bold text-foreground tracking-tight">
+                        Welcome back, <span className="text-primary">{profile?.username || 'Trader'}</span>
+                        {isFetching && <span className="ml-2 text-xs text-muted-foreground">(syncing...)</span>}
                     </h1>
-                    <p className="text-sm text-zinc-400 mt-1">
-                        Market is <span className={cn("font-medium", market.isOpen ? "text-emerald-500" : "text-zinc-500")}>
-                            {market.isOpen ? "OPEN" : "CLOSED"}
-                        </span>
-                        {market.session && `. ${market.session} Session.`}
+                    <p className="text-sm text-muted-foreground mt-1">
+                        Here's your trading performance overview
                     </p>
                 </div>
                 <Link
                     href="/journal/new"
-                    className={cn(
-                        "cta-primary flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-md text-sm font-medium transition-all border border-indigo-500",
-                        stats?.isLocked && "opacity-50 pointer-events-none"
-                    )}
+                    className="cta-primary flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-medium transition-all"
                 >
                     <PlusCircle className="h-4 w-4" />
                     Log Trade
@@ -93,7 +94,8 @@ export default function DashboardPage() {
                 <StatCard
                     title="Win Rate"
                     value={`${stats?.winRate ?? 0}%`}
-                    valueColor="white"
+                    valueColor={stats?.winRate && stats.winRate >= 50 ? "emerald" : "rose"}
+                    icon={TrendingUp}
                     trend={{
                         value: stats?.winRate && stats.winRate >= 50 ? "Above 50%" : "Below 50%",
                         type: stats?.winRate && stats.winRate >= 50 ? "up" : "down"
@@ -103,111 +105,123 @@ export default function DashboardPage() {
                     title="Avg SOP Score"
                     value={stats?.avgSopScore?.toFixed(1) ?? "-"}
                     valueColor="amber"
-                    icon={Star}
                     trend={{ value: stats?.avgSopScore && stats.avgSopScore >= 4 ? "Great execution" : "Room to improve", type: "neutral" }}
                 />
                 <StatCard
                     title="Today's P&L"
                     value={`${stats?.currentDayR && stats.currentDayR > 0 ? '+' : ''}${stats?.currentDayR ?? 0}R`}
                     valueColor={stats?.currentDayR && stats.currentDayR > 0 ? "emerald" : stats?.currentDayR && stats.currentDayR < 0 ? "rose" : "white"}
-                    icon={Activity}
-                    trend={{ value: stats?.isLocked ? "LOCKED" : "Trading active", type: stats?.isLocked ? "down" : "neutral" }}
+                    trend={{ value: new Date().toLocaleDateString('en-US', { weekday: 'long' }), type: "neutral" }}
                 />
             </div>
 
-            {/* Equity Curve & Risk Guard */}
+            {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <EquityCurve trades={allTrades} />
-                <RiskGuard />
-            </div>
-
-            {/* Recent Trades */}
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 overflow-hidden">
-                <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between">
-                    <h3 className="text-sm font-semibold text-zinc-200 flex items-center gap-2">
-                        Recent Trades
-                    </h3>
-                    <Link href="/journal" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1">
-                        View All <ArrowRight className="h-3 w-3" />
-                    </Link>
+                {/* Equity Curve - Takes 2 columns */}
+                <div className="lg:col-span-2">
+                    <EquityCurve trades={allTrades} />
                 </div>
 
-                {recentTrades.length === 0 ? (
-                    <div className="p-12 text-center">
-                        <p className="text-zinc-500 text-sm">No trades logged yet</p>
-                        <Link href="/journal/new" className="text-indigo-400 text-sm mt-2 inline-block hover:underline">
-                            Log your first trade →
+                {/* Winrate Widget */}
+                <WinrateWidget
+                    winRate={stats?.winRate ?? 0}
+                    totalWins={totalWins}
+                    totalTrades={stats?.totalTrades ?? 0}
+                />
+            </div>
+
+            {/* Calendar & Recent Trades */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Calendar Widget */}
+                <CalendarWidget
+                    monthlyData={calendarData || []}
+                    onDateClick={(date, trades) => setSelectedDateTrades(trades)}
+                />
+
+                {/* Recent Trades */}
+                <div className="rounded-xl border border-border bg-card overflow-hidden">
+                    <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+                        <h3 className="text-sm font-semibold text-foreground">Recent Trades</h3>
+                        <Link href="/journal" className="text-xs text-primary hover:text-primary/80 transition-colors flex items-center gap-1">
+                            View All <ArrowRight className="h-3 w-3" />
                         </Link>
                     </div>
-                ) : (
-                    <div className="divide-y divide-zinc-800/50">
-                        {recentTrades.map((trade) => (
+
+                    {recentTrades.length === 0 ? (
+                        <div className="p-12 text-center">
+                            <p className="text-muted-foreground text-sm">No trades logged yet</p>
+                            <Link href="/journal/new" className="text-primary text-sm mt-2 inline-block hover:underline">
+                                Log your first trade →
+                            </Link>
+                        </div>
+                    ) : (
+                        <div className="divide-y divide-border/50">
+                            {recentTrades.map((trade) => (
+                                <Link
+                                    key={trade.id}
+                                    href={`/journal/${trade.id}`}
+                                    className="table-row-hover flex items-center justify-between px-5 py-3 hover:bg-muted/50 transition-colors"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className={cn("w-8 h-8 rounded-lg border flex items-center justify-center", getResultColors(trade.result))}>
+                                            {getResultIcon(trade.result)}
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-foreground">
+                                                {trade.pair}
+                                            </p>
+                                            <p className="text-[10px] text-muted-foreground">{trade.trade_date}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        {trade.mentor_score && (
+                                            <div className="flex gap-0.5 text-amber-500 text-xs">
+                                                {Array.from({ length: trade.mentor_score }).map((_, i) => <span key={i}>★</span>)}
+                                            </div>
+                                        )}
+                                        <span className={cn("font-mono text-sm font-bold", getRRColor(trade.rr))}>
+                                            {trade.rr > 0 ? "+" : ""}{trade.rr.toFixed(2)}R
+                                        </span>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Selected Date Trades Modal (if any) */}
+            {selectedDateTrades.length > 0 && (
+                <div className="rounded-xl border border-primary/30 bg-card p-5">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-sm font-semibold text-foreground">
+                            Trades on {selectedDateTrades[0]?.trade_date}
+                        </h3>
+                        <button
+                            onClick={() => setSelectedDateTrades([])}
+                            className="text-xs text-muted-foreground hover:text-foreground"
+                        >
+                            Close
+                        </button>
+                    </div>
+                    <div className="space-y-2">
+                        {selectedDateTrades.map(trade => (
                             <Link
                                 key={trade.id}
                                 href={`/journal/${trade.id}`}
-                                className="table-row-hover flex items-center justify-between px-5 py-3 hover:bg-zinc-900/50 transition-colors"
+                                className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className={cn("w-8 h-8 rounded-lg border flex items-center justify-center", getResultColors(trade.result))}>
-                                        {getResultIcon(trade.result)}
+                                    <div className={cn("w-6 h-6 rounded border flex items-center justify-center text-xs", getResultColors(trade.result))}>
+                                        {trade.result === 'Win' ? '✓' : '✗'}
                                     </div>
-                                    <div>
-                                        <p className="text-sm font-medium text-white">
-                                            {trade.pair} <span className="text-zinc-500 font-normal">• {trade.session}</span>
-                                        </p>
-                                        <p className="text-[10px] text-zinc-500">{trade.trade_date}</p>
-                                    </div>
+                                    <span className="text-sm font-medium">{trade.pair}</span>
                                 </div>
-                                <div className="flex items-center gap-4">
-                                    {trade.mentor_score && (
-                                        <div className="flex gap-0.5 text-amber-500 text-xs">
-                                            {Array.from({ length: trade.mentor_score }).map((_, i) => <span key={i}>★</span>)}
-                                        </div>
-                                    )}
-                                    <span className={cn("font-mono text-sm font-bold", getRRColor(trade.rr))}>
-                                        {trade.rr > 0 ? "+" : ""}{trade.rr.toFixed(2)}R
-                                    </span>
-                                </div>
+                                <span className={cn("font-mono text-sm font-bold", getRRColor(trade.rr))}>
+                                    {trade.rr > 0 ? "+" : ""}{trade.rr.toFixed(2)}R
+                                </span>
                             </Link>
                         ))}
-                    </div>
-                )}
-            </div>
-
-            {/* Session Performance */}
-            {sessionStats && (sessionStats.london.count > 0 || sessionStats.newYork.count > 0) && (
-                <div className="grid grid-cols-2 gap-6">
-                    <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-900/30 relative overflow-hidden group">
-                        <div className="absolute right-0 top-0 p-32 bg-indigo-500/5 rounded-full blur-3xl group-hover:bg-indigo-500/10 transition-all" />
-                        <div className="relative">
-                            <p className="text-[10px] uppercase text-zinc-500 tracking-wider font-bold">London Session</p>
-                            <div className="flex items-end gap-2 mt-2">
-                                <p className="text-2xl font-mono text-white">{sessionStats.london.winRate}%</p>
-                                <span className="text-xs text-zinc-500 mb-1">Winrate • {sessionStats.london.count} trades</span>
-                            </div>
-                            <div className="w-full bg-zinc-800 h-1 mt-4 rounded-full overflow-hidden">
-                                <div className="bg-indigo-500 h-full transition-all" style={{ width: `${sessionStats.london.winRate}%` }} />
-                            </div>
-                            <p className={cn("text-xs font-mono mt-2", sessionStats.london.totalR >= 0 ? "text-emerald-500" : "text-rose-500")}>
-                                {sessionStats.london.totalR >= 0 ? "+" : ""}{sessionStats.london.totalR}R
-                            </p>
-                        </div>
-                    </div>
-                    <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-900/30 relative overflow-hidden group">
-                        <div className="absolute right-0 top-0 p-32 bg-purple-500/5 rounded-full blur-3xl group-hover:bg-purple-500/10 transition-all" />
-                        <div className="relative">
-                            <p className="text-[10px] uppercase text-zinc-500 tracking-wider font-bold">New York Session</p>
-                            <div className="flex items-end gap-2 mt-2">
-                                <p className="text-2xl font-mono text-white">{sessionStats.newYork.winRate}%</p>
-                                <span className="text-xs text-zinc-500 mb-1">Winrate • {sessionStats.newYork.count} trades</span>
-                            </div>
-                            <div className="w-full bg-zinc-800 h-1 mt-4 rounded-full overflow-hidden">
-                                <div className="bg-purple-500 h-full transition-all" style={{ width: `${sessionStats.newYork.winRate}%` }} />
-                            </div>
-                            <p className={cn("text-xs font-mono mt-2", sessionStats.newYork.totalR >= 0 ? "text-emerald-500" : "text-rose-500")}>
-                                {sessionStats.newYork.totalR >= 0 ? "+" : ""}{sessionStats.newYork.totalR}R
-                            </p>
-                        </div>
                     </div>
                 </div>
             )}

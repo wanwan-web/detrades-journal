@@ -111,13 +111,13 @@ export default function SettingsPage() {
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-xs text-zinc-400">Email</Label>
+                        <Label className="text-xs text-zinc-400">Username</Label>
                         <Input
-                            value={profile?.email || ""}
+                            value={profile?.username || ""}
                             disabled
                             className="bg-zinc-900 border-zinc-800 text-zinc-500"
                         />
-                        <p className="text-[10px] text-zinc-600">Email cannot be changed</p>
+                        <p className="text-[10px] text-zinc-600">Username cannot be changed</p>
                     </div>
                     <div className="space-y-2">
                         <Label className="text-xs text-zinc-400">Role</Label>

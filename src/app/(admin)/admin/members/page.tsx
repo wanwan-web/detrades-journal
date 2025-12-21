@@ -33,7 +33,7 @@ export default function MembersPage() {
 
     const filteredProfiles = profiles.filter(p =>
         p.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.email?.toLowerCase().includes(searchQuery.toLowerCase())
+        p.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const activeCount = profiles.filter(p => p.is_active).length;
@@ -140,7 +140,7 @@ export default function MembersPage() {
                                             <p className={cn("font-bold", profile.is_active ? "text-white" : "text-zinc-400")}>
                                                 {profile.username}
                                             </p>
-                                            <p className="text-xs text-zinc-500">{profile.email}</p>
+                                            <p className="text-xs text-zinc-500">{profile.full_name || profile.username}</p>
                                         </div>
                                     </div>
                                 </td>

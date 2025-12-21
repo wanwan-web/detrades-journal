@@ -218,8 +218,8 @@ export default function TeamHubPage() {
                                     className="group rounded-xl border border-zinc-800 bg-zinc-900/30 overflow-hidden hover:border-zinc-700 transition-all cursor-pointer"
                                 >
                                     <div className="h-40 bg-zinc-800 relative overflow-hidden">
-                                        {trade.image_url ? (
-                                            <img src={trade.image_url} alt="Trade" className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity" />
+                                        {trade.screenshot_url ? (
+                                            <img src={trade.screenshot_url} alt="Trade" className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity" />
                                         ) : (
                                             <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
                                                 <BookOpen className="h-8 w-8 text-zinc-700" />
@@ -243,8 +243,8 @@ export default function TeamHubPage() {
                                             </div>
                                         </div>
                                         <div className="flex gap-2 mt-3">
-                                            <span className="px-1.5 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">{trade.session}</span>
-                                            <span className="px-1.5 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">{trade.entry_model}</span>
+                                            <span className="px-1.5 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">{trade.trade_date}</span>
+                                            {trade.profiling && <span className="px-1.5 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">{trade.profiling}</span>}
                                         </div>
                                     </div>
                                 </Link>

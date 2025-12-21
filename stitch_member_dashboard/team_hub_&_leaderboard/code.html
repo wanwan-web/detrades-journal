@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Detrades Team Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6464f2",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101022",
+                        "card-dark": "#161b22",
+                        "text-secondary": "#9d9db9",
+                        "profit": "#0bda68",
+                        "loss": "#fa6938",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.375rem", 
+                        "lg": "0.5rem", 
+                        "xl": "0.75rem", 
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #101022; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #282839; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f3f5a; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-hidden">
+<div class="flex h-screen w-full">
+<div class="hidden lg:flex flex-col w-64 border-r border-white/5 bg-[#111118] h-full flex-shrink-0">
+<div class="flex flex-col h-full p-4 justify-between">
+<div class="flex flex-col gap-6">
+<div class="flex gap-3 items-center px-2">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border border-white/10" data-alt="User avatar with a subtle gradient" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBfYMQOD3j6copdAdgwnDonfVfU3P6fQj_B8sfpPy7HWqWXVKJTKRMe8COOoAVLhX7btoQ-odJ_QFrGvEVzn6t7R7f6IgqPok5T2_VP6XK4yA0YObhi3EwMk6hKmFCq6hUvkFROCfZ8ZpTGrafn1-B4llmmdo0N8U5bee1zr-cBc7rLS779JQmuEO-CB2pt6NGXA2AVziUf6mDJ2yeo2jsi5_hEFq_0WHqjhu3CL8VmnHhCMdRsCLySkDgHdSJ_bhjGYJUwvhv6OJwM");'></div>
+<div class="flex flex-col">
+<h1 class="text-white text-base font-medium leading-none">Detrades</h1>
+<p class="text-text-secondary text-xs font-normal mt-1">Pro Account</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">book</span>
+<p class="text-sm font-medium">Journal</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">bar_chart</span>
+<p class="text-sm font-medium">Analytics</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/20 text-primary border border-primary/10" href="#">
+<span class="material-symbols-outlined text-[20px] fill-current">group</span>
+<p class="text-sm font-medium">Team Hub</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<p class="text-sm font-medium">Settings</p>
+</a>
+</nav>
+</div>
+<div class="px-2">
+<button class="flex w-full items-center gap-3 px-3 py-2 text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span class="text-sm font-medium">Log Out</span>
+</button>
+</div>
+</div>
+</div>
+<main class="flex-1 flex flex-col h-full overflow-y-auto relative">
+<header class="flex-shrink-0 px-6 py-6 lg:px-10 border-b border-white/5 bg-[#111118]/50 backdrop-blur-md sticky top-0 z-20">
+<div class="flex flex-wrap justify-between items-end gap-4">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-text-secondary text-xs font-mono uppercase tracking-widest">
+<span>Teams</span>
+<span class="material-symbols-outlined text-[10px]">arrow_forward_ios</span>
+<span class="text-primary">Alpha Squadron</span>
+</div>
+<div class="flex items-center gap-4">
+<h1 class="text-white text-3xl font-bold leading-tight tracking-tight">Alpha Squadron Hub</h1>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-500/10 text-green-400 border border-green-500/20 uppercase tracking-wider">Top 5%</span>
+</div>
+<p class="text-text-secondary text-sm">Ranked #4 Global • 142 Members • Mentor: <span class="text-white font-medium hover:underline cursor-pointer">@AlexTrader</span></p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-[#282839] hover:bg-[#323246] text-white text-sm font-medium border border-white/5 transition-colors">
+<span class="material-symbols-outlined text-[18px]">share</span>
+<span>Share</span>
+</button>
+<button class="flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-lg shadow-primary/20 transition-all">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+<span>Invite Member</span>
+</button>
+</div>
+</div>
+</header>
+<div class="p-6 lg:px-10 lg:py-8 flex flex-col gap-8 max-w-[1600px] w-full mx-auto">
+<section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="flex flex-col gap-1 rounded-xl p-5 bg-card-dark border border-white/5 shadow-sm">
+<div class="flex justify-between items-start">
+<p class="text-text-secondary text-sm font-medium">Total Team RR</p>
+<span class="material-symbols-outlined text-text-secondary text-[20px]">show_chart</span>
+</div>
+<div class="flex items-baseline gap-2 mt-2">
+<p class="text-white text-2xl font-mono font-bold">142.5</p>
+<div class="px-1.5 py-0.5 rounded bg-profit/10 text-profit text-xs font-mono font-medium">+12.5%</div>
+</div>
+</div>
+<div class="flex flex-col gap-1 rounded-xl p-5 bg-card-dark border border-white/5 shadow-sm">
+<div class="flex justify-between items-start">
+<p class="text-text-secondary text-sm font-medium">Avg Win Rate</p>
+<span class="material-symbols-outlined text-text-secondary text-[20px]">pie_chart</span>
+</div>
+<div class="flex items-baseline gap-2 mt-2">
+<p class="text-white text-2xl font-mono font-bold">68.4%</p>
+<div class="px-1.5 py-0.5 rounded bg-profit/10 text-profit text-xs font-mono font-medium">+2.1%</div>
+</div>
+</div>
+<div class="flex flex-col gap-1 rounded-xl p-5 bg-card-dark border border-white/5 shadow-sm">
+<div class="flex justify-between items-start">
+<p class="text-text-secondary text-sm font-medium">Active Trades (Live)</p>
+<span class="material-symbols-outlined text-text-secondary text-[20px]">bolt</span>
+</div>
+<div class="flex items-baseline gap-2 mt-2">
+<p class="text-white text-2xl font-mono font-bold">18</p>
+<div class="px-1.5 py-0.5 rounded bg-primary/20 text-primary text-xs font-mono font-medium">High Vol</div>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+<div class="xl:col-span-8 flex flex-col gap-6">
+<section class="bg-card-dark rounded-xl border border-white/5 p-6 relative overflow-hidden">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-32 bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
+<div class="flex justify-between items-center mb-6 relative z-10">
+<h2 class="text-white text-lg font-bold">Top Traders (This Month)</h2>
+<button class="text-sm text-primary hover:text-white transition-colors">View All Time</button>
+</div>
+<div class="flex justify-center items-end gap-4 sm:gap-12 pb-4 relative z-10">
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="text-text-secondary font-mono text-xs mb-1">2ND PLACE</div>
+<div class="relative">
+<div class="size-16 sm:size-20 rounded-full border-2 border-[#C0C0C0] p-1 bg-[#161b22]">
+<div class="w-full h-full rounded-full bg-cover bg-center" data-alt="Portrait of Mike Ross" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAtgy-nvNZTht21g2qTIuLtF5u8P20Nij2HSu73_QYZmQBW9umhEqEWE4KN2toI63tFcMJh7gyjp370XfBLlvHGf-N_FT4_Cui4urL0GIDeO-J1_QRG8DfnNKRbK3N_Kj2T2vTUVAmuIe3IFX3FoZgG_sc9UGwbNPoCqBSI7-yjfDTc0SVhirZ_nK4M0ZxaHOM-74fGQhnmbSoslPPzH6o66Pp7C9S52MRSy1nB2jiQU_JAo-tSp6jbdZpfjTbvh-Mo-t7o8jiBQ8Ct");'></div>
+</div>
+<div class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#C0C0C0] text-[#111118] text-[10px] font-bold px-2 py-0.5 rounded-full">SILVER</div>
+</div>
+<div class="text-center mt-2">
+<p class="text-white text-sm font-semibold">Mike Ross</p>
+<p class="text-profit text-sm font-mono font-bold">+9.5R</p>
+</div>
+</div>
+<div class="flex flex-col items-center gap-2 -mt-8 group cursor-pointer">
+<div class="text-primary font-mono text-sm mb-1 font-bold animate-pulse">1ST PLACE</div>
+<div class="relative">
+<div class="absolute inset-0 bg-primary/40 blur-xl rounded-full"></div>
+<div class="relative size-20 sm:size-28 rounded-full border-4 border-[#FFD700] p-1 bg-[#161b22]">
+<div class="w-full h-full rounded-full bg-cover bg-center" data-alt="Portrait of Sarah Jenkins" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC7B9w34k6qa4aTERaZVhyEn6FiN97Ft7Zy_QXxczIbWhnBpUB_6u5Cf4iiCXXsmw5bYeWobT4Tl37JDVYP7voMhnTFkdPsGZWjIwPtNMxpGUQnNxS2rWgnMS4Abm0P69Qu7f6X46ksn1MFkF7Zyz1FPivzl2SvwQX4DgwOxCXO1e79zu2rn9rwrAiRWZEBxUb9r-idtcgyAaS7VLYwwaoqGTR6JAnBeoRd_cv9tp_OErSFH3eLI3fecm9NIrWsnl8Sg6H0qoSCaGx_");'></div>
+</div>
+<div class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#FFD700] text-[#111118] text-xs font-bold px-3 py-0.5 rounded-full shadow-lg shadow-[#FFD700]/20">GOLD</div>
+</div>
+<div class="text-center mt-3">
+<p class="text-white text-base font-bold">Sarah Jenkins</p>
+<p class="text-profit text-base font-mono font-bold">+12.4R</p>
+</div>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="text-text-secondary font-mono text-xs mb-1">3RD PLACE</div>
+<div class="relative">
+<div class="size-16 sm:size-20 rounded-full border-2 border-[#CD7F32] p-1 bg-[#161b22]">
+<div class="w-full h-full rounded-full bg-cover bg-center" data-alt="Portrait of David Chen" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAvn2QxiSUu_K-YsZhNLhgF-wC9psZKBxvE5eb04JQR_rwck2-sTqViafbN9jS91lmw7Kw5nlFCsAMALAZBnaWvQiKc0NnNQZ8zSeY9pGkTBo9DCmUrCyNDc2szWeIb6wjoFjyID3A3mL-5kPxY-gx9W-iws0Qp4V221gw4SpFi4vkEsjpXPulhHiFuW0DrO7O6TluvzRYn92i57vLAiGA5Fm9TRleRA-59-O91jra1GW9VCmPBzPh996ZkT8X0F7_rHyj8QS5SlN-8");'></div>
+</div>
+<div class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#CD7F32] text-[#111118] text-[10px] font-bold px-2 py-0.5 rounded-full">BRONZE</div>
+</div>
+<div class="text-center mt-2">
+<p class="text-white text-sm font-semibold">David Chen</p>
+<p class="text-profit text-sm font-mono font-bold">+8.2R</p>
+</div>
+</div>
+</div>
+</section>
+<section class="bg-card-dark rounded-xl border border-white/5 overflow-hidden flex flex-col flex-1">
+<div class="p-4 border-b border-white/5 flex flex-wrap gap-4 justify-between items-center">
+<h2 class="text-white text-lg font-bold">Team Leaderboard</h2>
+<div class="flex gap-2">
+<input class="bg-[#111118] border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-primary/50 placeholder-text-secondary" placeholder="Search member..." type="text"/>
+<button class="p-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-text-secondary">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-[#111118] text-text-secondary text-xs uppercase tracking-wider font-semibold border-b border-white/5">
+<th class="px-6 py-4 font-medium w-16">Rank</th>
+<th class="px-6 py-4 font-medium">Trader</th>
+<th class="px-6 py-4 font-medium text-right">Win Rate</th>
+<th class="px-6 py-4 font-medium text-right">Net RR</th>
+<th class="px-6 py-4 font-medium text-right">R:R Ratio</th>
+<th class="px-6 py-4 font-medium text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<tr class="group hover:bg-white/[0.02] transition-colors">
+<td class="px-6 py-4 text-text-secondary font-mono">04</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-cover bg-center bg-white/10" data-alt="Avatar of Trader 4" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCOL23i2W5rJ-bIUtf9hDq0MuyJ3Si4-LFQVTOTND2Y0saaxRQPE_mZb1YAFwUWrSF9nfbgvTL0xWyMo9BNc-R9-cMQ2rkIm3zAcyBZXNSNTpbon0rc21k7qyTpelaxZLe4tIoYrEo5uhk4Unqoj9m2unW0OE2clq8DpyWhd46QO1nry8ZFUD6N6cFl3mZ_NRrXzkc_JPF86dUhIzOkWn02ICBxlu2r29F2OFFGwk8trny0bOlgBFEDlJoYXSGvLwMu7wtg7lKWcPs-");'></div>
+<div>
+<p class="text-white text-sm font-medium">Alex Morgan</p>
+<div class="flex gap-1">
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">Scalper</span>
+</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-right text-white font-mono">62.5%</td>
+<td class="px-6 py-4 text-right text-profit font-mono font-medium">+7.1R</td>
+<td class="px-6 py-4 text-right text-text-secondary font-mono">1.85</td>
+<td class="px-6 py-4 text-right">
+<button class="text-xs font-medium text-primary hover:text-white transition-colors">Follow</button>
+</td>
+</tr>
+<tr class="group hover:bg-white/[0.02] transition-colors">
+<td class="px-6 py-4 text-text-secondary font-mono">05</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-cover bg-center bg-white/10" data-alt="Avatar of Trader 5" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCTGdPe6Vs8vJj8Iy-o09PZcggf6iQK73QK6Mz6akk1f_p3GIgZPF6Op91PaGjOYAhXBO4erYX7IqctAt-tDvUWG1tMSbRkTn_5fDDvx7thtOMBX9CcKFxJdgw2fiQgLgoNpS3W2CQ6Y_LfrXGPMZpCGKMxTw5JP4MpHbo_2zbVWIe3ydDHmu4bZgw6CtDr0iRi0kdnkG9EGaIqlbFkIXflv5kr24UFn58LpCt13FwPZhX8Lnu6ZHfVJ_ZiPSGMDTJocDSblxqxBBXu");'></div>
+<div>
+<p class="text-white text-sm font-medium">Jessica Wu</p>
+<div class="flex gap-1">
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">Swing</span>
+</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-right text-white font-mono">58.2%</td>
+<td class="px-6 py-4 text-right text-profit font-mono font-medium">+5.9R</td>
+<td class="px-6 py-4 text-right text-text-secondary font-mono">2.10</td>
+<td class="px-6 py-4 text-right">
+<button class="text-xs font-medium text-primary hover:text-white transition-colors">Follow</button>
+</td>
+</tr>
+<tr class="bg-primary/5 hover:bg-primary/10 transition-colors border-l-2 border-primary">
+<td class="px-6 py-4 text-primary font-mono font-bold">06</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-cover bg-center bg-white/10 border border-primary/50" data-alt="User Avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB2nQ6csbinBigyTSKOiZeiPAOfFLGUntIbPXkEhCTcVeDQsbRS7xgVsZvKrcYIP2HLIRy_F-R4pN7c6aanjbXQcQPLTOauciJMoytuNtMJ8FzKfao9MKpSG_45HZ-4PlEj4PfvlMS94-J4EviY4UD63mfanIK-OzdDIzj2oWnIrZzp4geRwZgq1hMh-NNNpDwgwrarstkNcO9jmxurPolvPcwCwq59ag9sONFLD-ZiTg1FRjUqCC9ug5xU-t5iL7TxW_8Rse9Z2Lok");'></div>
+<div>
+<p class="text-white text-sm font-bold">You</p>
+<div class="flex gap-1">
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">Day Trader</span>
+</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-right text-white font-mono">55.0%</td>
+<td class="px-6 py-4 text-right text-profit font-mono font-medium">+4.2R</td>
+<td class="px-6 py-4 text-right text-text-secondary font-mono">1.5</td>
+<td class="px-6 py-4 text-right">
+<span class="text-xs text-text-secondary">-</span>
+</td>
+</tr>
+<tr class="group hover:bg-white/[0.02] transition-colors">
+<td class="px-6 py-4 text-text-secondary font-mono">07</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-cover bg-center bg-white/10" data-alt="Avatar of Trader 7" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAqNaDdHjiRhWUBGrxzDiw8LL6B4mmeUV_QCp4gES2kMvB-lZSYOwi8eG0xeE3h3ciuqzhiWlaOWpK3ZM4DCN5BmgMJY9UZTlhfEl-_aJVRrgFgmb826YtUfLoZ5u-3X9FmjwkYInXG5_A7FsP0qkU5ZWAff-qBxXvVkBAeP9DopVkhG0kKVNFosC0ovKRw3lPO1SWYUFrX2Oq8h9dUVD8PWOsACEF8oKrImblutDRznOi38SIJmYIUztJviayRH1qAK0TqzIsM_xVH");'></div>
+<div>
+<p class="text-white text-sm font-medium">Tom Hardy</p>
+<div class="flex gap-1">
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">Scalper</span>
+</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-right text-white font-mono">49.4%</td>
+<td class="px-6 py-4 text-right text-loss font-mono font-medium">-0.23R</td>
+<td class="px-6 py-4 text-right text-text-secondary font-mono">1.2</td>
+<td class="px-6 py-4 text-right">
+<button class="text-xs font-medium text-primary hover:text-white transition-colors">Follow</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 border-t border-white/5 flex justify-center">
+<button class="text-sm text-text-secondary hover:text-white transition-colors flex items-center gap-1">
+                                Show More <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+</section>
+</div>
+<div class="xl:col-span-4 flex flex-col gap-6">
+<div class="bg-gradient-to-br from-[#161b22] to-[#1c1c2e] rounded-xl border border-primary/20 p-5 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-3 opacity-10 text-primary">
+<span class="material-symbols-outlined text-[100px] rotate-12">campaign</span>
+</div>
+<div class="flex items-center gap-2 mb-3 relative z-10">
+<span class="material-symbols-outlined text-primary text-[20px]">push_pin</span>
+<h3 class="text-white text-sm font-bold uppercase tracking-wide">Mentor Update</h3>
+</div>
+<p class="text-text-secondary text-sm leading-relaxed relative z-10 mb-4">
+                            "Focus on ES futures today. CPI data at 8:30 AM EST created a liquidity sweep at the 4150 level. Look for longs if we hold above VWAP."
+                        </p>
+<div class="flex items-center gap-2 relative z-10">
+<div class="size-6 rounded-full bg-cover" data-alt="Mentor Avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAmKGs_hM29LCLKkGez58KWxtBr7lb93XbycXPt_23StQAdIOcrENThS3bDFlAnrykwQoHlnDS2hnPbdKTMb-0QhjBKpIpkpibDyEOb1sbtQ6p0Sc1YixT6pHahLPQ3i1NOy2flEaz7zcMUMUtBjL1t8bwBwAeJuchUNdHGPf1zVZCJCTuhNaUxk_gX0aMAU5dacpdOoq7R2LbSXSha5f8n8qpqPxtPQRxaFLZ9Iw1wQ2HfziZaprfPt9EYsPRcm5YsQdYCW_gAOvNA");'></div>
+<span class="text-xs text-white font-medium">@AlexTrader • 2h ago</span>
+</div>
+</div>
+<div class="bg-card-dark rounded-xl border border-white/5 flex flex-col h-full max-h-[600px]">
+<div class="p-4 border-b border-white/5 flex justify-between items-center">
+<h3 class="text-white text-base font-bold">Recent Trades</h3>
+<div class="flex items-center gap-1 text-[10px] text-profit uppercase font-bold tracking-wider animate-pulse">
+<span class="size-2 rounded-full bg-profit"></span>
+                                Live
+                            </div>
+</div>
+<div class="flex-1 overflow-y-auto p-2 space-y-1">
+<div class="p-3 hover:bg-white/5 rounded-lg transition-colors flex gap-3 group cursor-pointer">
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<div class="flex items-center gap-2">
+<span class="font-mono text-sm font-bold text-white">TSLA</span>
+<span class="px-1.5 rounded bg-profit/10 text-profit text-[10px] font-bold uppercase border border-profit/20">Long</span>
+</div>
+<span class="text-xs text-text-secondary font-mono">1m ago</span>
+</div>
+<p class="text-xs text-text-secondary"><span class="text-white font-medium">Sarah Jenkins</span> entered @ <span class="font-mono text-white">245.50</span></p>
+</div>
+</div>
+<div class="p-3 hover:bg-white/5 rounded-lg transition-colors flex gap-3 group cursor-pointer">
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<div class="flex items-center gap-2">
+<span class="font-mono text-sm font-bold text-white">AMD</span>
+<span class="px-1.5 rounded bg-loss/10 text-loss text-[10px] font-bold uppercase border border-loss/20">Short</span>
+</div>
+<span class="text-xs text-text-secondary font-mono">5m ago</span>
+</div>
+<p class="text-xs text-text-secondary"><span class="text-white font-medium">Mike Ross</span> entered @ <span class="font-mono text-white">105.20</span></p>
+</div>
+</div>
+<div class="p-3 hover:bg-white/5 rounded-lg transition-colors flex gap-3 group cursor-pointer">
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<div class="flex items-center gap-2">
+<span class="font-mono text-sm font-bold text-white">NVDA</span>
+<span class="px-1.5 rounded bg-profit/10 text-profit text-[10px] font-bold uppercase border border-profit/20">Long</span>
+</div>
+<span class="text-xs text-text-secondary font-mono">12m ago</span>
+</div>
+<p class="text-xs text-text-secondary"><span class="text-white font-medium">David Chen</span> closed @ <span class="font-mono text-white">460.00</span> <span class="text-profit font-mono">(+1.2R)</span></p>
+</div>
+</div>
+<div class="p-3 hover:bg-white/5 rounded-lg transition-colors flex gap-3 group cursor-pointer">
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<div class="flex items-center gap-2">
+<span class="font-mono text-sm font-bold text-white">ES_F</span>
+<span class="px-1.5 rounded bg-loss/10 text-loss text-[10px] font-bold uppercase border border-loss/20">Short</span>
+</div>
+<span class="text-xs text-text-secondary font-mono">24m ago</span>
+</div>
+<p class="text-xs text-text-secondary"><span class="text-white font-medium">Jessica Wu</span> hit Stop Loss <span class="text-loss font-mono">(-0.5R)</span></p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-card-dark rounded-xl border border-white/5 p-5">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-white text-sm font-bold">Performance vs Benchmark</h3>
+<span class="text-xs text-text-secondary">30D</span>
+</div>
+<div class="relative h-32 w-full">
+<div class="absolute bottom-0 left-0 w-full h-full opacity-20 bg-gradient-to-t from-primary/50 to-transparent clip-path-chart"></div>
+<svg class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 100 100">
+<path d="M0,80 Q25,75 50,70 T100,60" fill="none" stroke="#4b5563" stroke-dasharray="4 2" stroke-width="2"></path>
+<path d="M0,80 Q20,60 40,65 T70,30 T100,10" fill="none" stroke="#6464f2" stroke-width="3"></path>
+<circle cx="100" cy="10" fill="#6464f2" r="4" stroke="#101022" stroke-width="2"></circle>
+</svg>
+</div>
+<div class="flex justify-between items-center mt-2 text-xs">
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-primary"></span>
+<span class="text-white">Team Alpha</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-gray-600"></span>
+<span class="text-text-secondary">S&amp;P 500</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

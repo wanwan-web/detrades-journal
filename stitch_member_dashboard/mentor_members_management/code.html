@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mentor Members Management - Detrades Journal</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=Noto+Sans:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6464f2",
+                        "primary-hover": "#4f4fcf",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111118",
+                        "surface-dark": "#1b1b24",
+                        "surface-light": "#ffffff",
+                        "amber-accent": "#f59e0b", // Adding amber as requested for admin accents
+                        "amber-accent-hover": "#d97706",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-x-hidden transition-colors duration-200">
+<div class="flex h-screen w-full">
+<!-- Sidebar -->
+<aside class="w-64 h-full flex flex-col bg-[#111118] border-r border-slate-800 hidden lg:flex shrink-0">
+<div class="p-6">
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat bg-cover rounded-xl w-10 h-10 shadow-lg shadow-primary/20" data-alt="Detrades Journal logo abstract geometric shape" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCVE80ZPaFVlRf6-aRoBltnnmx-xbyazydG0A32T0qa8-NgD8TdjErapWf8dgYVRHNP30QUmpYUUvTHditg4qCU5uDdEFlVdL4hTsjAPJBYMmDuUAhBT6y7awnOOzNWj9LzagerxM_NYTUUkqu_m7dx0DQ8QWqXGkOx1XoPmOHVskdX8UzPTST6bHWpZUh96x8jFkf59wvrwAidFvE5n8wlT84zjhZFSXf0KOZuMNrTqDUI8LDbRy6RKfs7Dlt0OkNJbBx68mKEfvjL");'></div>
+<div class="flex flex-col">
+<h1 class="text-white text-lg font-bold leading-none tracking-tight">Detrades</h1>
+<p class="text-slate-500 text-xs font-medium uppercase tracking-wider mt-1">Admin Panel</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-4 py-4 flex flex-col gap-2 overflow-y-auto">
+<div class="text-slate-500 text-xs font-bold uppercase px-3 py-2 tracking-wider">Main</div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary border border-primary/20 transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-sm font-medium">Members</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">analytics</span>
+<span class="text-sm font-medium">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">folder_shared</span>
+<span class="text-sm font-medium">Audit Logs</span>
+</a>
+<div class="text-slate-500 text-xs font-bold uppercase px-3 py-2 tracking-wider mt-4">Settings</div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">settings</span>
+<span class="text-sm font-medium">General</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">shield</span>
+<span class="text-sm font-medium">Roles &amp; Permissions</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-800">
+<div class="flex items-center gap-3 px-2 py-2 mb-2">
+<div class="bg-center bg-no-repeat bg-cover rounded-full w-9 h-9 border border-slate-700" data-alt="User profile avatar of a smiling man" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBL-9QWXrVNRDV4v4M5xubaREafpuCnqHArLbiGOnu5ua9Vd5srKV6yex1D-lVbI7NIIYM0efIQDaV7sRGNJ-dEy4reVOYSF_r7X2-0Q6uhYpPawHp8ckHPosjmqsM9KvMixCJsVeefaN8lulogbP7K2hX5d3UpyvWp-j0ZBi87WDilLZduhi7x_qfJY7FgcC5h377cl6DX-HmxgvK3wYyg9DekF0WjEt8wK7eDbIEf8Yy0rna6Ykg5clxb2wceUZGHTwBO5s74dikW");'></div>
+<div class="flex flex-col min-w-0">
+<p class="text-white text-sm font-medium truncate">Alex Morgan</p>
+<p class="text-slate-500 text-xs truncate">Super Admin</p>
+</div>
+</div>
+<button class="flex w-full items-center justify-center gap-2 rounded-lg h-9 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold uppercase tracking-wider transition-colors">
+<span class="material-symbols-outlined text-[18px]">logout</span>
+<span>Logout</span>
+</button>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col h-full overflow-hidden relative">
+<!-- Mobile Header -->
+<header class="flex lg:hidden items-center justify-between p-4 bg-[#111118] border-b border-slate-800">
+<div class="flex items-center gap-2">
+<button class="text-slate-400 hover:text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<span class="font-bold text-white">Detrades Admin</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-slate-800 bg-cover bg-center" data-alt="User profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCn7dN1mR0PfrLG4IUWh2Ny-l_lIinBRjD0mYaZrKoY_B43e3AZenzUnG_u7N4oVB09QYB2HO7VQyAIP8ks724LZTUDe5CqYAdVQV2lYclwhC1RjRE8vFI_o878b4A7p_EW5b4MBtNA1Odk1-lLc_xZ6iE16nXF3j4muzI26Ua0fk6PHTm8pmB032VZEZ9a0QgzF9V94nD9GL8GjKS7cX3IkdKKjxLk0oya0illE9IlczTM44z5Y1vomST_86axUERHjyxETcM9p7At");'></div>
+</header>
+<div class="flex-1 overflow-y-auto p-4 md:p-8 lg:px-12">
+<div class="max-w-[1400px] mx-auto flex flex-col gap-8 pb-10">
+<!-- Breadcrumbs & Header -->
+<div class="flex flex-col gap-4">
+<nav class="flex items-center gap-2 text-sm text-slate-500">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Admin</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-white font-medium">Members</span>
+</nav>
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div>
+<h1 class="text-3xl font-bold text-white tracking-tight">Members Management</h1>
+<p class="text-slate-400 mt-1">Manage trader accounts, subscriptions, and platform access.</p>
+</div>
+<button class="flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white rounded-lg px-5 py-2.5 font-semibold shadow-lg shadow-primary/25 transition-all">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span>Add Member</span>
+</button>
+</div>
+</div>
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Card 1 -->
+<div class="bg-[#1b1b24] p-5 rounded-xl border border-slate-800 shadow-sm relative overflow-hidden group">
+<div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-[64px] text-primary">group</span>
+</div>
+<p class="text-slate-400 text-sm font-medium">Total Traders</p>
+<div class="flex items-end gap-3 mt-1">
+<h3 class="text-2xl font-bold text-white">1,240</h3>
+<span class="text-emerald-500 text-xs font-bold mb-1 bg-emerald-500/10 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px]">trending_up</span> 3.5%
+                                </span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-[#1b1b24] p-5 rounded-xl border border-slate-800 shadow-sm relative overflow-hidden group">
+<div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-[64px] text-primary">verified_user</span>
+</div>
+<p class="text-slate-400 text-sm font-medium">Active Today</p>
+<div class="flex items-end gap-3 mt-1">
+<h3 class="text-2xl font-bold text-white">856</h3>
+<span class="text-emerald-500 text-xs font-bold mb-1 bg-emerald-500/10 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px]">trending_up</span> 12%
+                                </span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-[#1b1b24] p-5 rounded-xl border border-slate-800 shadow-sm relative overflow-hidden group">
+<div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-[64px] text-amber-accent">pending_actions</span>
+</div>
+<p class="text-slate-400 text-sm font-medium">Pending Approvals</p>
+<div class="flex items-end gap-3 mt-1">
+<h3 class="text-2xl font-bold text-white">12</h3>
+<span class="text-orange-500 text-xs font-bold mb-1 bg-orange-500/10 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                                    Needs Review
+                                </span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-[#1b1b24] p-5 rounded-xl border border-slate-800 shadow-sm relative overflow-hidden group">
+<div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-[64px] text-red-500">person_off</span>
+</div>
+<p class="text-slate-400 text-sm font-medium">Churn Rate</p>
+<div class="flex items-end gap-3 mt-1">
+<h3 class="text-2xl font-bold text-white">2.1%</h3>
+<span class="text-emerald-500 text-xs font-bold mb-1 bg-emerald-500/10 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px]">trending_down</span> 0.5%
+                                </span>
+</div>
+</div>
+</div>
+<!-- Filters & Search -->
+<div class="bg-[#1b1b24] p-4 rounded-xl border border-slate-800 flex flex-col md:flex-row gap-4 items-center justify-between">
+<div class="relative w-full md:max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">search</span>
+<input class="w-full bg-[#111118] text-white border border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-slate-600 transition-all" placeholder="Search by name, email, or ID..." type="text"/>
+</div>
+<div class="flex w-full md:w-auto gap-3 overflow-x-auto pb-2 md:pb-0">
+<select class="bg-[#111118] text-white text-sm border border-slate-700 rounded-lg px-3 py-2.5 focus:outline-none focus:border-primary cursor-pointer min-w-[140px]">
+<option value="all">All Roles</option>
+<option value="trader">Trader</option>
+<option value="mentor">Mentor</option>
+<option value="admin">Admin</option>
+</select>
+<select class="bg-[#111118] text-white text-sm border border-slate-700 rounded-lg px-3 py-2.5 focus:outline-none focus:border-primary cursor-pointer min-w-[140px]">
+<option value="all">All Statuses</option>
+<option value="active">Active</option>
+<option value="pending">Pending</option>
+<option value="suspended">Suspended</option>
+</select>
+<button class="flex items-center justify-center gap-2 bg-[#111118] hover:bg-slate-800 border border-slate-700 text-slate-300 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+<span>More Filters</span>
+</button>
+</div>
+</div>
+<!-- Data Table -->
+<div class="bg-[#1b1b24] rounded-xl border border-slate-800 overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-[#23232f] border-b border-slate-700/50">
+<th class="p-4 text-xs font-semibold uppercase tracking-wider text-slate-400 w-12">
+<input class="rounded border-slate-600 bg-slate-800 text-primary focus:ring-offset-0 focus:ring-1 focus:ring-primary" type="checkbox"/>
+</th>
+<th class="p-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Member</th>
+<th class="p-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Status</th>
+<th class="p-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Plan</th>
+<th class="p-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Join Date</th>
+<th class="p-4 text-xs font-semibold uppercase tracking-wider text-slate-400 text-right">Performance</th>
+<th class="p-4 text-xs font-semibold uppercase tracking-wider text-slate-400 w-16"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-800">
+<!-- Row 1 -->
+<tr class="group hover:bg-[#23232f] transition-colors">
+<td class="p-4">
+<input class="rounded border-slate-600 bg-slate-800 text-primary focus:ring-offset-0 focus:ring-1 focus:ring-primary" type="checkbox"/>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-cover bg-center border border-slate-700" data-alt="Profile picture of Sarah Johnson" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB0OTscEYWSMlPcU4KSOKlWL57wERay-gF6_lo_cDLuG6ICHbWx7VeUU6_vfu6f0meO7W1Mf3BHl0kHWUcEP3-KIQa_5YP_WF2RfQwXM2X4Wj8mmhg08z0vI3LQTV0J8VlNtccLpmJ_BYju05STSa63fyXb5y-xe3yQ0TRgJL5giuSgNxEvutYbNqPo_yT7XFdY1P4ufuvrVRA2-kFmgxTwzhi-LR8L5bv1yDM0SRhlombR3iP7K3Tpth2og4BU7Py0VZsEgXaP4Z10");'></div>
+<div>
+<p class="text-sm font-semibold text-white">Sarah Johnson</p>
+<p class="text-xs text-slate-500">sarah.j@example.com</p>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                                                Active
+                                            </span>
+</td>
+<td class="p-4">
+<span class="text-sm text-slate-300">Pro Trader</span>
+</td>
+<td class="p-4">
+<span class="text-sm text-slate-400">Oct 24, 2023</span>
+</td>
+<td class="p-4 text-right">
+<div class="flex flex-col items-end">
+<span class="text-sm font-medium text-emerald-400">+12.5%</span>
+<span class="text-xs text-slate-500">This Month</span>
+</div>
+</td>
+<td class="p-4 text-right">
+<button class="text-slate-500 hover:text-white p-1 rounded hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="group hover:bg-[#23232f] transition-colors">
+<td class="p-4">
+<input class="rounded border-slate-600 bg-slate-800 text-primary focus:ring-offset-0 focus:ring-1 focus:ring-primary" type="checkbox"/>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-cover bg-center border border-slate-700" data-alt="Profile picture of Michael Chen" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAh0oKjMxRsDQZGu-MD5NcICrnWpsxN7splZxuMBySCF_l7_3KifArz1R6CG11l2GzaEgfRYQG05wcsQL9TEiypoay6n7JT6RPBFcbMcPCUOUBANoNV4s91J1mwVTaG43jhmGWZqSj8dYokcCPZcmNnuniKBd4cJBaP6rj4fiYaA8LiGn8JWe6anP5JKpdfxjAQnsyAEYELVjNkp0EsFbtnlvhA1tcsPEDeCsFwYyP8n-bPcpjE6EPbCAp4S45f6hVjC46a5CJMxTTi");'></div>
+<div>
+<p class="text-sm font-semibold text-white">Michael Chen</p>
+<p class="text-xs text-slate-500">m.chen@example.com</p>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-500/10 text-orange-500 border border-orange-500/20">
+                                                Pending
+                                            </span>
+</td>
+<td class="p-4">
+<span class="text-sm text-slate-300">Basic</span>
+</td>
+<td class="p-4">
+<span class="text-sm text-slate-400">Nov 02, 2023</span>
+</td>
+<td class="p-4 text-right">
+<div class="flex flex-col items-end">
+<span class="text-sm font-medium text-slate-400">-</span>
+<span class="text-xs text-slate-500">No Data</span>
+</div>
+</td>
+<td class="p-4 text-right">
+<button class="text-slate-500 hover:text-white p-1 rounded hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="group hover:bg-[#23232f] transition-colors">
+<td class="p-4">
+<input class="rounded border-slate-600 bg-slate-800 text-primary focus:ring-offset-0 focus:ring-1 focus:ring-primary" type="checkbox"/>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-cover bg-center border border-slate-700" data-alt="Profile picture of Emma Wilson" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAAuT7jLJiDuOqaGnIL_D7KQaK41SQUZj8ui43ikP1O4k7IsNmC2a7MgulIhNHiqiSJ4U16TRycGac4IftGYPkIkgc6IfaMTslsyCa-NsO8t6bSoqxT7WxhxcVZdQQOr9z8H5w00B0t6lKfVQIDAQ-lXZoVLTZeHP8bgf2U2yrpsjW2jmZhJr1_sZHWZIUppcVjf4DHhfMsiW33ewpj8FGuf-R8giTemxHhCgSM2Ztsa1SOKH6RInh13nuBZYOnj7ii6A_Zf5AEuNjG");'></div>
+<div>
+<p class="text-sm font-semibold text-white">Emma Wilson</p>
+<p class="text-xs text-slate-500">emma.w@example.com</p>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                                                Active
+                                            </span>
+</td>
+<td class="p-4">
+<span class="text-sm text-slate-300">Elite</span>
+</td>
+<td class="p-4">
+<span class="text-sm text-slate-400">Sep 15, 2023</span>
+</td>
+<td class="p-4 text-right">
+<div class="flex flex-col items-end">
+<span class="text-sm font-medium text-red-400">-2.4%</span>
+<span class="text-xs text-slate-500">This Month</span>
+</div>
+</td>
+<td class="p-4 text-right">
+<button class="text-slate-500 hover:text-white p-1 rounded hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="group hover:bg-[#23232f] transition-colors">
+<td class="p-4">
+<input class="rounded border-slate-600 bg-slate-800 text-primary focus:ring-offset-0 focus:ring-1 focus:ring-primary" type="checkbox"/>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-sm border border-slate-600">
+                                                    JD
+                                                </div>
+<div>
+<p class="text-sm font-semibold text-white">James Doe</p>
+<p class="text-xs text-slate-500">james.d@example.com</p>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-500 border border-red-500/20">
+                                                Suspended
+                                            </span>
+</td>
+<td class="p-4">
+<span class="text-sm text-slate-300">Basic</span>
+</td>
+<td class="p-4">
+<span class="text-sm text-slate-400">Jan 10, 2023</span>
+</td>
+<td class="p-4 text-right">
+<div class="flex flex-col items-end">
+<span class="text-sm font-medium text-slate-400">0%</span>
+<span class="text-xs text-slate-500">Inactive</span>
+</div>
+</td>
+<td class="p-4 text-right">
+<button class="text-slate-500 hover:text-white p-1 rounded hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="group hover:bg-[#23232f] transition-colors">
+<td class="p-4">
+<input class="rounded border-slate-600 bg-slate-800 text-primary focus:ring-offset-0 focus:ring-1 focus:ring-primary" type="checkbox"/>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-cover bg-center border border-slate-700" data-alt="Profile picture of Lucas Gray" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDKbniKEjnZuINQxfGqwAGD-EhYP1Ny-tu2iYniFqBUTAmSGpt2aSZI1cgDgy4NQDE6h8mbDYIzJEO8SbY0Qk_W5ycNosenq0iSIGYRwpygRjMKsL_H4XisoIVlwWqkOmQMBAJi1KmirDrwPP6U9RlrvmHuozpmX3zrTIrrvWk2jFXmt-Iyu8oKu6OZ8GutFnzLlvMk9L3wkn1l9RQJsGKlNsI7EZLyT9FO6LvU5oKMEPqAtCOtJmML7EhJc6l_qee2aPatZGQq2XcA");'></div>
+<div>
+<p class="text-sm font-semibold text-white">Lucas Gray</p>
+<p class="text-xs text-slate-500">l.gray@example.com</p>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                                                Active
+                                            </span>
+</td>
+<td class="p-4">
+<span class="text-sm text-slate-300">Pro Trader</span>
+</td>
+<td class="p-4">
+<span class="text-sm text-slate-400">Dec 05, 2023</span>
+</td>
+<td class="p-4 text-right">
+<div class="flex flex-col items-end">
+<span class="text-sm font-medium text-emerald-400">+5.2%</span>
+<span class="text-xs text-slate-500">This Month</span>
+</div>
+</td>
+<td class="p-4 text-right">
+<button class="text-slate-500 hover:text-white p-1 rounded hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="border-t border-slate-800 p-4 flex items-center justify-between">
+<span class="text-sm text-slate-500">Showing <span class="text-white font-medium">1-5</span> of <span class="text-white font-medium">1,240</span> members</span>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 rounded-md border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-colors" disabled="">
+                                    Previous
+                                </button>
+<button class="px-3 py-1.5 rounded-md border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 text-sm transition-colors">
+                                    Next
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

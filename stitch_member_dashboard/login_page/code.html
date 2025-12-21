@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Detrades Journal - Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6464f2",
+                        "primary-hover": "#5050d2",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101022",
+                        "surface-dark": "#1c1c2e",
+                        "zinc-950": "#09090b",
+                        "zinc-900": "#18181b",
+                        "zinc-800": "#27272a",
+                        "zinc-400": "#a1a1aa",
+                        "zinc-100": "#f4f4f5",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen flex flex-col">
+<!-- Header / Nav -->
+<header class="w-full border-b border-zinc-200 dark:border-zinc-800/50 bg-white/50 dark:bg-[#111118]/80 backdrop-blur-md sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-16">
+<div class="flex items-center gap-3">
+<div class="size-8 text-primary">
+<svg class="w-full h-full" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<span class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">Detrades Journal</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<nav class="flex gap-6">
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-zinc-400 dark:hover:text-white transition-colors" href="#">Features</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-zinc-400 dark:hover:text-white transition-colors" href="#">Pricing</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-zinc-400 dark:hover:text-white transition-colors" href="#">Mentors</a>
+</nav>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 text-sm font-bold text-slate-900 dark:text-white bg-transparent hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">Log In</button>
+<button class="px-4 py-2 text-sm font-bold text-white bg-primary hover:bg-primary-hover rounded-lg shadow-lg shadow-primary/25 transition-all">Sign Up</button>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-grow flex items-center justify-center p-4 relative overflow-hidden">
+<!-- Abstract Background Decorative Elements -->
+<div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+<div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px]"></div>
+<!-- Subtle Grid Pattern -->
+<div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150" data-alt="Subtle noise texture overlay"></div>
+<svg class="absolute inset-0 w-full h-full opacity-[0.03]" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<pattern height="40" id="grid-pattern" patternunits="userSpaceOnUse" width="40">
+<path d="M0 40L40 0H20L0 20M40 40V20L20 40" fill="none" stroke="currentColor" stroke-width="1"></path>
+</pattern>
+</defs>
+<rect fill="url(#grid-pattern)" height="100%" width="100%"></rect>
+</svg>
+</div>
+<div class="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+<!-- Left Column: Branding / Marketing (Visible on large screens) -->
+<div class="hidden lg:flex flex-col gap-8">
+<div class="space-y-4">
+<h1 class="text-5xl font-black tracking-tight leading-[1.1] text-slate-900 dark:text-white">
+                        Master your <br/>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-400">Trading Edge</span>
+</h1>
+<p class="text-lg text-slate-600 dark:text-zinc-400 max-w-md leading-relaxed">
+                        Join thousands of professional traders who use Detrades Journal to log trades, analyze performance, and refine their strategies with data-driven insights.
+                    </p>
+</div>
+<div class="grid grid-cols-2 gap-4 mt-4">
+<div class="p-4 rounded-xl bg-white dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 backdrop-blur-sm">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-primary">analytics</span>
+<p class="font-bold text-sm">Advanced Analytics</p>
+</div>
+<p class="text-xs text-slate-500 dark:text-zinc-500">Visualize your P&amp;L and win-rate over time.</p>
+</div>
+<div class="p-4 rounded-xl bg-white dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 backdrop-blur-sm">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-green-400">security</span>
+<p class="font-bold text-sm">Secure Journaling</p>
+</div>
+<p class="text-xs text-slate-500 dark:text-zinc-500">Private, encrypted logs for your peace of mind.</p>
+</div>
+</div>
+<div class="mt-8 flex items-center gap-4">
+<div class="flex -space-x-3">
+<img alt="User Avatar 1" class="w-10 h-10 rounded-full border-2 border-white dark:border-background-dark" data-alt="Portrait of a female user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdxnkU77fmPnOvF4qEPZDs2QhgH2adgRav2AW7NoHlPAHH_1KezBjv-0faFT4bNATk-wytuz3Dh18GQ8JV3jfVUC0QJ3CJLGVZcu86WwGa_geXaKZTt6D0Zu1jbetXg5fwzQhypfdoSwP9svG7JHZa4Shf5OfMSVJVghCiYzsm1R3M9sJTz3sSFr9dAeLnMSJb9KXqhNwmBFTrZzQcfe1nZxtMHHsbcWbtM8EprOHrZ5SUkr5My67xp4dWw3CVzID8PQ2oRJWRcfl5"/>
+<img alt="User Avatar 2" class="w-10 h-10 rounded-full border-2 border-white dark:border-background-dark" data-alt="Portrait of a male user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5wNjMvP3MsMZX1sdtqQkaH-ey5RqyNZ8fLlaTHPx58taeTJ3BsLySOUK5Eu4L32Ywc8lZczjvvQnKDwXwPgN08ZD4ltMr1oPZ81hFYJCs7kLyhImopIuOz_EUBrDYscy1ql8brwkZvKvW3wsb4wXr5wv5F_fQMRUYt8_hU1rGiT9A-ScY1JlWazA6khnCio2ivwyqIi5p12ws54HRoUnKg1LdZo59nVRP0DmRYKdhowMnbh_8t7omYEnCf9nUjLrWK7yoqdtSPlHD"/>
+<img alt="User Avatar 3" class="w-10 h-10 rounded-full border-2 border-white dark:border-background-dark" data-alt="Portrait of a smiling male user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDb6XWk4heywc9_ybVw5_ACuWoAJ0x6C4LLhym2dDF1kS93seZmpbujdCyC0i603xVLINO7xHwecwVUeUtXL5Hds_efWrh5qqS-EME90lsJ3llOLEEeHJ0odmQAgBfRQ_SHyS6QRdeHU7mimUVA0siKNWO0zh4-TnvEUSy2fd9VHXz_9oJEhdiJyHsKbY2YMS9IvkWkb881yzdJahdFomOeluZz-xe2MCHdf45Q1oJ_TdOD_iBuI9Qwed9MsqFRWcjY-23F1BLi9B8Z"/>
+<div class="w-10 h-10 rounded-full border-2 border-white dark:border-background-dark bg-zinc-800 flex items-center justify-center text-xs font-medium text-white">+2k</div>
+</div>
+<p class="text-sm text-slate-600 dark:text-zinc-400">Traders improved their win-rate this month.</p>
+</div>
+</div>
+<!-- Right Column: Login Form -->
+<div class="w-full max-w-md mx-auto">
+<div class="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-2xl shadow-black/20 p-8 sm:p-10 relative overflow-hidden group">
+<!-- Subtle Glow effect on card -->
+<div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-primary/20 rounded-full blur-[60px] pointer-events-none"></div>
+<div class="relative z-10 flex flex-col gap-6">
+<div class="mb-2">
+<h2 class="text-2xl font-bold text-slate-900 dark:text-white">Welcome back, Trader</h2>
+<p class="text-slate-500 dark:text-zinc-400 text-sm mt-1">Please enter your details to sign in.</p>
+</div>
+<form class="flex flex-col gap-5">
+<!-- Email Input -->
+<label class="flex flex-col gap-2">
+<span class="text-sm font-semibold text-slate-700 dark:text-zinc-300">Email Address</span>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 dark:text-zinc-500 text-[20px]">mail</span>
+</div>
+<input class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-[#1c1c27] border border-slate-200 dark:border-[#3b3b54] rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#9d9db9] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm" placeholder="name@example.com" required="" type="email"/>
+</div>
+</label>
+<!-- Password Input -->
+<label class="flex flex-col gap-2">
+<div class="flex justify-between items-center">
+<span class="text-sm font-semibold text-slate-700 dark:text-zinc-300">Password</span>
+<a class="text-xs font-medium text-primary hover:text-primary-hover underline decoration-transparent hover:decoration-current transition-all" href="#">Forgot password?</a>
+</div>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 dark:text-zinc-500 text-[20px]">lock</span>
+</div>
+<input class="w-full pl-10 pr-10 py-3 bg-slate-50 dark:bg-[#1c1c27] border border-slate-200 dark:border-[#3b3b54] rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#9d9db9] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm" placeholder="••••••••" required="" type="password"/>
+<button class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 dark:text-zinc-500 hover:text-slate-600 dark:hover:text-zinc-300 transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility_off</span>
+</button>
+</div>
+</label>
+<!-- Actions -->
+<div class="flex flex-col gap-4 mt-2">
+<button class="w-full flex items-center justify-center h-11 px-6 rounded-lg bg-primary hover:bg-primary-hover text-white font-bold text-sm tracking-wide shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all transform active:scale-[0.98]" type="submit">
+                                    Log In
+                                </button>
+<div class="relative flex items-center py-2">
+<div class="flex-grow border-t border-slate-200 dark:border-zinc-800"></div>
+<span class="flex-shrink-0 mx-4 text-xs font-medium text-slate-400 dark:text-zinc-500">OR CONTINUE WITH</span>
+<div class="flex-grow border-t border-slate-200 dark:border-zinc-800"></div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-700 text-slate-700 dark:text-white font-medium text-sm transition-colors" type="button">
+<img alt="Google Logo" class="w-5 h-5" data-alt="Google G Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-1NUTUwLxxsjDGz5dggIQZk0xHvSgFdUuSoSeGwDtMoleGZFA0GKhRPco0BGGGXVmN5X5z2zzDf8ibkAN8XGhRzf0m7WkWg8jG7AtMnbcc0jTMYGAUPzAautkOIsAG6WWpzk2Ky_WFKe3Adp7rxu4rlqOvpDIz4WOtSXi_YYsLGfHkhXTBEtVr2JhZmJK8dbRiI3toRext9kwpR4yExaRhshYBklRSgozhrzpcRCk5P9gj_NNeea1eOtmTF9WW8a-zN_l0lGV18vC"/>
+                                        Google
+                                    </button>
+<button class="flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-700 text-slate-700 dark:text-white font-medium text-sm transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">ios</span>
+                                        Apple
+                                    </button>
+</div>
+</div>
+</form>
+<p class="text-center text-sm text-slate-500 dark:text-zinc-400">
+                            Don't have an account? 
+                            <a class="font-bold text-primary hover:text-primary-hover transition-colors" href="#">Sign up for free</a>
+</p>
+</div>
+</div>
+<!-- Footer Links small -->
+<div class="mt-8 flex justify-center gap-6 text-xs text-slate-400 dark:text-zinc-600">
+<a class="hover:text-slate-600 dark:hover:text-zinc-400 transition-colors" href="#">Privacy Policy</a>
+<span>•</span>
+<a class="hover:text-slate-600 dark:hover:text-zinc-400 transition-colors" href="#">Terms of Service</a>
+<span>•</span>
+<a class="hover:text-slate-600 dark:hover:text-zinc-400 transition-colors" href="#">Help Center</a>
+</div>
+</div>
+</div>
+</main>
+</body></html>

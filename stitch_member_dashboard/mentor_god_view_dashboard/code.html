@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mentor God View Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6464f2", // Keeping system primary for non-admin elements if any
+                        "admin-accent": "#f59e0b", // Amber-500 for God View
+                        "admin-accent-hover": "#d97706", // Amber-600
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101022", // Deep dark base
+                        "surface-dark": "#1E293B", // Slightly lighter for cards
+                        "card-dark": "#181825", // Provided example color style
+                        "card-border": "#3b3b54",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-x-hidden">
+<div class="relative flex min-h-screen w-full flex-row">
+<aside class="w-20 lg:w-72 flex-none flex flex-col justify-between bg-[#111118] border-r border-[#3b3b54] p-4 sticky top-0 h-screen overflow-y-auto">
+<div class="flex flex-col gap-8">
+<div class="flex items-center gap-3 px-2">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 border-2 border-admin-accent relative" data-alt="Abstract golden geometric logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDspCQpHorLCtN5t4Ds4XbqWnTsonRh1qXYoXm7RLpblOTv7NX1QwH0kym0rUyv95XleW7-rcsqA7P-XpLVMlu9OLtze9x-VKpDk8osvUY1nmW6V4oM5rfmWyGmPRG0n-F_0IvaD8QG6WO0dsXr8ANKzrR0QBxqed7uj2bh0K9XYLkx-ayqSRJdN33SO7FvVjZyeRmBmaaJcHhstcipB3P0JboJKCsv5UD7QjYcTMjx6nm5TQY-iRU_Cg_jDqWybPXURQS6SvUBRU0h");'>
+<div class="absolute -bottom-1 -right-1 bg-admin-accent rounded-full p-1 border border-[#111118]">
+<span class="material-symbols-outlined text-white text-[12px] leading-none">verified_user</span>
+</div>
+</div>
+<div class="hidden lg:flex flex-col">
+<h1 class="text-white text-base font-bold leading-tight">Detrades Admin</h1>
+<p class="text-admin-accent text-xs font-bold uppercase tracking-wider">God View</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-3 rounded-xl bg-admin-accent/10 border border-admin-accent/20 group hover:bg-admin-accent/20 transition-all" href="#">
+<span class="material-symbols-outlined text-admin-accent group-hover:scale-110 transition-transform">dashboard</span>
+<p class="hidden lg:block text-white text-sm font-medium">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-[#282839] group transition-all" href="#">
+<span class="material-symbols-outlined text-[#9d9db9] group-hover:text-white">group</span>
+<p class="hidden lg:block text-[#9d9db9] group-hover:text-white text-sm font-medium">Members</p>
+</a>
+<div class="flex items-center justify-between px-3 py-3 rounded-xl hover:bg-[#282839] group cursor-pointer transition-all">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#9d9db9] group-hover:text-white">notifications_active</span>
+<p class="hidden lg:block text-[#9d9db9] group-hover:text-white text-sm font-medium">Alerts</p>
+</div>
+<div class="hidden lg:flex size-5 rounded-full bg-red-500 items-center justify-center">
+<span class="text-[10px] font-bold text-white">3</span>
+</div>
+</div>
+<a class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-[#282839] group transition-all" href="#">
+<span class="material-symbols-outlined text-[#9d9db9] group-hover:text-white">candlestick_chart</span>
+<p class="hidden lg:block text-[#9d9db9] group-hover:text-white text-sm font-medium">Market Data</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-[#282839] group transition-all" href="#">
+<span class="material-symbols-outlined text-[#9d9db9] group-hover:text-white">settings</span>
+<p class="hidden lg:block text-[#9d9db9] group-hover:text-white text-sm font-medium">Settings</p>
+</a>
+</nav>
+</div>
+<div class="flex flex-col gap-4">
+<div class="p-4 rounded-xl bg-gradient-to-br from-admin-accent/20 to-transparent border border-admin-accent/10 hidden lg:block">
+<p class="text-white text-sm font-bold mb-1">System Status</p>
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-green-500 animate-pulse"></div>
+<p class="text-[#9d9db9] text-xs">All Systems Operational</p>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col min-h-screen overflow-x-hidden">
+<header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-6 md:p-10 pb-6">
+<div class="flex flex-col gap-1">
+<h2 class="text-white text-3xl font-black leading-tight tracking-tight">Mentor Dashboard</h2>
+<p class="text-[#9d9db9] text-base font-normal">Community overview and risk analysis</p>
+</div>
+<div class="flex items-center gap-3 bg-[#181825] p-1 rounded-lg border border-[#3b3b54]">
+<button class="px-4 py-2 rounded bg-admin-accent text-black text-sm font-bold shadow-lg shadow-admin-accent/20 hover:bg-admin-accent-hover transition-colors">
+                    Last 30 Days
+                </button>
+<button class="px-4 py-2 rounded text-[#9d9db9] text-sm font-medium hover:text-white hover:bg-[#282839] transition-colors">
+                    Custom
+                </button>
+</div>
+</header>
+<div class="px-6 md:px-10 pb-8">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+<div class="flex flex-col gap-3 rounded-xl p-6 bg-[#181825] border border-admin-accent/30 shadow-lg shadow-admin-accent/5 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-admin-accent text-6xl">account_balance</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-admin-accent text-xl">monetization_on</span>
+<p class="text-[#9d9db9] text-sm font-medium uppercase tracking-wider">Total Managed RR</p>
+</div>
+<div>
+<p class="text-white text-3xl font-bold leading-tight">4,250 R</p>
+<div class="flex items-center gap-1 mt-2">
+<span class="material-symbols-outlined text-[#0bda68] text-sm">trending_up</span>
+<p class="text-[#0bda68] text-sm font-medium">+5.2% <span class="text-[#9d9db9] font-normal">vs last month</span></p>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-3 rounded-xl p-6 bg-[#181825] border border-[#3b3b54] hover:border-admin-accent/30 transition-colors relative overflow-hidden">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-white text-xl">analytics</span>
+<p class="text-[#9d9db9] text-sm font-medium uppercase tracking-wider">Community Win Rate</p>
+</div>
+<div>
+<p class="text-white text-3xl font-bold leading-tight">58.4%</p>
+<div class="flex items-center gap-1 mt-2">
+<span class="material-symbols-outlined text-[#fa6938] text-sm">trending_down</span>
+<p class="text-[#fa6938] text-sm font-medium">-1.1% <span class="text-[#9d9db9] font-normal">fluctuation</span></p>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-3 rounded-xl p-6 bg-[#181825] border border-[#3b3b54] hover:border-admin-accent/30 transition-colors relative overflow-hidden">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-white text-xl">groups</span>
+<p class="text-[#9d9db9] text-sm font-medium uppercase tracking-wider">Active Traders</p>
+</div>
+<div>
+<p class="text-white text-3xl font-bold leading-tight">142</p>
+<div class="flex items-center gap-1 mt-2">
+<span class="material-symbols-outlined text-[#0bda68] text-sm">person_add</span>
+<p class="text-[#0bda68] text-sm font-medium">+8 <span class="text-[#9d9db9] font-normal">new this week</span></p>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-3 rounded-xl p-6 bg-[#181825] border border-[#3b3b54] hover:border-admin-accent/30 transition-colors relative overflow-hidden">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-white text-xl">balance</span>
+<p class="text-[#9d9db9] text-sm font-medium uppercase tracking-wider">Avg Risk/Reward</p>
+</div>
+<div>
+<p class="text-white text-3xl font-bold leading-tight">1:2.1</p>
+<div class="flex items-center gap-1 mt-2">
+<span class="material-symbols-outlined text-[#0bda68] text-sm">arrow_upward</span>
+<p class="text-[#0bda68] text-sm font-medium">+0.2 <span class="text-[#9d9db9] font-normal">improvement</span></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col xl:flex-row gap-6 px-6 md:px-10 pb-10 flex-1">
+<div class="flex flex-col gap-6 flex-[2]">
+<div class="rounded-xl bg-[#181825] border border-[#3b3b54] p-6">
+<div class="flex justify-between items-center mb-6">
+<div>
+<p class="text-white text-lg font-bold">Daily Trading Volume</p>
+<p class="text-[#9d9db9] text-sm">Community-wide aggregate</p>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex items-center gap-1 px-2 py-1 bg-admin-accent/10 rounded text-admin-accent text-xs font-bold">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+                                +12% Activity
+                             </div>
+</div>
+</div>
+<div class="flex items-end gap-2 h-48 w-full px-2">
+<div class="w-full bg-[#282839] rounded-t-sm hover:bg-admin-accent transition-colors relative group" style="height: 40%">
+<div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-white text-black text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">420</div>
+</div>
+<div class="w-full bg-[#282839] rounded-t-sm hover:bg-admin-accent transition-colors" style="height: 65%"></div>
+<div class="w-full bg-[#282839] rounded-t-sm hover:bg-admin-accent transition-colors" style="height: 45%"></div>
+<div class="w-full bg-[#282839] rounded-t-sm hover:bg-admin-accent transition-colors" style="height: 80%"></div>
+<div class="w-full bg-admin-accent rounded-t-sm shadow-[0_0_10px_rgba(245,158,11,0.5)]" style="height: 95%"></div> 
+<div class="w-full bg-[#282839] rounded-t-sm hover:bg-admin-accent transition-colors" style="height: 60%"></div>
+<div class="w-full bg-[#282839] rounded-t-sm hover:bg-admin-accent transition-colors" style="height: 50%"></div>
+<div class="w-full bg-[#282839] rounded-t-sm hover:bg-admin-accent transition-colors" style="height: 75%"></div>
+<div class="w-full bg-[#282839] rounded-t-sm hover:bg-admin-accent transition-colors" style="height: 30%"></div>
+<div class="w-full bg-[#282839] rounded-t-sm hover:bg-admin-accent transition-colors" style="height: 55%"></div>
+<div class="w-full bg-[#282839] rounded-t-sm hover:bg-admin-accent transition-colors" style="height: 85%"></div>
+<div class="w-full bg-[#282839] rounded-t-sm hover:bg-admin-accent transition-colors" style="height: 70%"></div>
+</div>
+<div class="flex justify-between mt-3 px-1">
+<span class="text-[#9d9db9] text-xs font-medium">01 Mar</span>
+<span class="text-[#9d9db9] text-xs font-medium">15 Mar</span>
+<span class="text-[#9d9db9] text-xs font-medium">30 Mar</span>
+</div>
+</div>
+<div class="rounded-xl bg-[#181825] border border-[#3b3b54] overflow-hidden flex-1">
+<div class="p-6 border-b border-[#3b3b54] flex justify-between items-center bg-red-500/5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-red-500">warning</span>
+<h3 class="text-white text-lg font-bold">Traders At Risk</h3>
+</div>
+<button class="text-sm text-admin-accent hover:text-white font-medium">View All Alerts</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-[#111118] text-[#9d9db9] text-xs uppercase font-semibold">
+<tr>
+<th class="px-6 py-4">Trader</th>
+<th class="px-6 py-4">Risk Factor</th>
+<th class="px-6 py-4">Current Drawdown</th>
+<th class="px-6 py-4 text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#3b3b54]">
+<tr class="hover:bg-[#282839]/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-cover bg-center" data-alt="Portrait of a focused man" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAXJSczvZtrC3-upvE2yy80C2OnWN35c-0n1iHNXaA0K2fuJCPoJpFVB_pSge__kXYKhpVdUHC6QmWfDtWLPmPqGyyNTcshOqFBQdneSPLnx6Fh-LgFIuNPqNq3e60qU5Pfo4wQC9D1abmnqrXV5PkAlmL6ubY8wnj-dW9QxxFeCiUrN872f9Fotj9Lrm5D3jLxtY_YP-YEcKDGgmzVlNi3LlnX0_b7A9_Ettglafm4iZ88mYefReZkp40_Zk2QijI5SM25iYj170FW");'></div>
+<p class="text-white text-sm font-medium">Marcus Chen</p>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2 py-1 rounded bg-red-500/10 text-red-500 text-xs font-bold border border-red-500/20">
+                                            Overleverage
+                                        </span>
+</td>
+<td class="px-6 py-4">
+<p class="text-red-400 font-bold text-sm">-18.4%</p>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-[#9d9db9] hover:text-white transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-[#282839]/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-cover bg-center" data-alt="Portrait of a young woman" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDyZnOBXQPNAqH5yXEtLDbfXsnHlXqafwsMc8yjs3twzgqrzMobSziL80XJ6N0eY5naY4CxVv1fOkzPAbYB6zVxqb2tCw8emUVM7A6W2hDoItw7_ItY6mNrjTx2Ts77_cqjG45XLEtsllg1PICMRMj8YIJbEtVvS8Mah52rhV3QQT8n_6gGyF22xRNZnu4cE6Z9dDIPFFt939SexhvbLGciQbDEEa34VqHa5NjRpcdXGPXqihrbA0gmkTot-0_VGRtBiy4d0cVEqZSf");'></div>
+<p class="text-white text-sm font-medium">Sarah Jenkins</p>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2 py-1 rounded bg-orange-500/10 text-orange-500 text-xs font-bold border border-orange-500/20">
+                                            Consecutive Losses
+                                        </span>
+</td>
+<td class="px-6 py-4">
+<p class="text-orange-400 font-bold text-sm">-8.2%</p>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-[#9d9db9] hover:text-white transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="flex flex-col flex-1 gap-6">
+<div class="rounded-xl bg-[#181825] border border-[#3b3b54] h-full flex flex-col">
+<div class="p-6 border-b border-[#3b3b54] flex justify-between items-center">
+<div>
+<h3 class="text-white text-lg font-bold">Member Performance</h3>
+<p class="text-[#9d9db9] text-sm mt-1">Sorted by RR (Current Month)</p>
+</div>
+<div class="p-2 rounded-lg bg-[#282839] cursor-pointer hover:bg-[#3b3b54] transition-colors">
+<span class="material-symbols-outlined text-white">filter_list</span>
+</div>
+</div>
+<div class="p-4 border-b border-[#3b3b54]">
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#9d9db9] text-[20px]">search</span>
+<input class="w-full bg-[#111118] border border-[#3b3b54] text-white text-sm rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:border-admin-accent/50 focus:ring-1 focus:ring-admin-accent/50 placeholder-[#565674]" placeholder="Search member..." type="text"/>
+</div>
+</div>
+<div class="overflow-y-auto max-h-[600px] flex-1">
+<div class="p-4 border-b border-[#3b3b54] hover:bg-[#282839]/50 transition-colors group cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-cover bg-center border border-[#3b3b54]" data-alt="Portrait of a confident businessman" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuABH8Yurp2IiMdxwWIfx6KQr4GA6StYq7TUCTrJ9Afg4zlsZDFLg-sujef1R9Uh_sKf5Qxxn0w77R5BvVlhjojeJJN3MW9eU-CPyGoIrE_iqAEKhpYFGSlMdzOvtQtZ4Idwbhk6Dt56WvRjKfadSCEE9wv0BgjM9yDD1DceEqC0I9gXvYg6TK0pCtZ6QN52OkMP8_rbBUfSd_t5fNMWkbagJssOYOPubj1UnVIolXmQ3sz-aHpozIrRpR9MzUp-w4Pgr9PZT3KXikQC");'></div>
+<div>
+<p class="text-white text-sm font-bold">David Ross</p>
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-green-500"></span>
+<p class="text-[#9d9db9] text-xs">Online</p>
+</div>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[#0bda68] text-sm font-bold">+124.5R</p>
+<p class="text-[#9d9db9] text-xs">RR</p>
+</div>
+</div>
+<div class="flex items-center justify-between mt-3">
+<div class="flex gap-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-[#282839] text-white border border-[#3b3b54]">Pro</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-[#282839] text-[#9d9db9] border border-[#3b3b54]">Forex</span>
+</div>
+<span class="material-symbols-outlined text-[#9d9db9] text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</div>
+</div>
+<div class="p-4 border-b border-[#3b3b54] hover:bg-[#282839]/50 transition-colors group cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-cover bg-center border border-[#3b3b54]" data-alt="Portrait of a woman with glasses" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBJLVuVm8h8NcQcJHIxpGMOkFxuRYHJItpevERPCQL3QhOuzfEqAloRfYFw9xIJODIrHJJ1afqQiPhb_MdDiZ0Mt6s9CrXfHsN5uatLSH6vKPaEzr5W-MughG6_f-MBZ39Bj5d2PjFeJm9p8N4EXVBb7gWVd_FZNzoWrlPDm9-jTJWPljy_XEvbUqC9y3cfoknJWQgSPmjhlbCOQ7l1pkDbqaRY2ii_wl2I_N3yvAi2uEpIraAsCzH160Y2F0dhuP9KO1M5g1Dqe3D9");'></div>
+<div>
+<p class="text-white text-sm font-bold">Elena Rodriguez</p>
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-[#565674]"></span>
+<p class="text-[#9d9db9] text-xs">2h ago</p>
+</div>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[#0bda68] text-sm font-bold">+82.3R</p>
+<p class="text-[#9d9db9] text-xs">RR</p>
+</div>
+</div>
+<div class="flex items-center justify-between mt-3">
+<div class="flex gap-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-[#282839] text-white border border-[#3b3b54]">Mentor</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-[#282839] text-[#9d9db9] border border-[#3b3b54]">Crypto</span>
+</div>
+<span class="material-symbols-outlined text-[#9d9db9] text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</div>
+</div>
+<div class="p-4 border-b border-[#3b3b54] hover:bg-[#282839]/50 transition-colors group cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-cover bg-center border border-[#3b3b54]" data-alt="Portrait of a young man smiling" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBSs1qyQjGFCKNyrVRJ8MRI0VaJ9Zx5ZIK3wUgTC-wb8SAlz-ScXtdrtur2bQkWe15omAIMj73Si6xX-FyQVFedJLP--IYCRI5h8r9azcaZQgtzQNuFTWuV3e5yAdN8rqq093fsnPY1_xaZ4G--Y4NlrGafAVZHA55EMEYKnHAfb-coD9dSz6S14uzzTdt44iLgG0pi6QcWGQt0kVSjeUrztmFB56LyypMQcdJI9JsTCn-Kap1A89XdeiuVKfOBpU-jTKU5WEUutcPC");'></div>
+<div>
+<p class="text-white text-sm font-bold">Michael Chang</p>
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-green-500"></span>
+<p class="text-[#9d9db9] text-xs">Online</p>
+</div>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[#0bda68] text-sm font-bold">+51.0R</p>
+<p class="text-[#9d9db9] text-xs">RR</p>
+</div>
+</div>
+<div class="flex items-center justify-between mt-3">
+<div class="flex gap-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-[#282839] text-white border border-[#3b3b54]">Basic</span>
+</div>
+<span class="material-symbols-outlined text-[#9d9db9] text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</div>
+</div>
+<div class="p-4 border-b border-[#3b3b54] hover:bg-[#282839]/50 transition-colors group cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-cover bg-center border border-[#3b3b54]" data-alt="Portrait of a serious man" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCsUAzVEydncEDu13fjQv8DYmjuV-pfAx4Joq2vtcWPi8tWXRs2ALnEh41sXohGQdZ9YadlIbY1S3tGeyAn4MsfzfR63g4TVDR4TPfNlnPn_Qa7AoTrAe3QN5ih4X1vPVwpxT_xNHDuKUANozoo7cN8kyfvK2r3rW-lUoSGJHnhy52T77xKCUUHWLpcyIpohSbC2PWA09Bgqrbpakj76Ap00SnC4Xiw5ENMv1SY0pNBoxlyM_bC_uLoGKOhFcQnML8W1fJZxBnQmbuf");'></div>
+<div>
+<p class="text-white text-sm font-bold">James Wilson</p>
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-[#565674]"></span>
+<p class="text-[#9d9db9] text-xs">5h ago</p>
+</div>
+</div>
+</div>
+<div class="text-right">
+<p class="text-red-500 text-sm font-bold">-12.4R</p>
+<p class="text-[#9d9db9] text-xs">RR</p>
+</div>
+</div>
+<div class="flex items-center justify-between mt-3">
+<div class="flex gap-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-[#282839] text-white border border-[#3b3b54]">Basic</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-red-500/10 text-red-500 border border-red-500/20">Watchlist</span>
+</div>
+<span class="material-symbols-outlined text-[#9d9db9] text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-[#3b3b54] bg-[#111118]/50">
+<button class="w-full py-2 rounded-lg border border-[#3b3b54] text-[#9d9db9] text-sm font-medium hover:bg-[#282839] hover:text-white transition-colors">
+                            View All Members
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

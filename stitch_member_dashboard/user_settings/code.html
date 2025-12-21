@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Detrades Journal - User Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6464f2",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101022",
+                        "surface-dark": "#181825",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for dark theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #101022; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #282839; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b3b54; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-hidden selection:bg-primary selection:text-white">
+<div class="flex h-screen w-full">
+<!-- Sidebar Navigation -->
+<aside class="w-72 bg-[#111118] border-r border-[#282839] flex-col justify-between p-4 hidden md:flex shrink-0">
+<div class="flex flex-col gap-8">
+<!-- User/Brand Info -->
+<div class="flex items-center gap-3 px-2">
+<div class="bg-center bg-no-repeat bg-cover rounded-xl h-10 w-10 shadow-lg shadow-primary/20" data-alt="Abstract geometric logo gradient in purple and blue" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDH0ZwIMNQ1mj8S2mmhMPGRNid757v47W28WCa3mygxQUl_0Na7zxZfhC8iAS13HdEVlPMXHH9feLv3JczWFesSGuDtle73Jh48SpwIBTa5dq1R5KeXFDkNF5XVb3X6-ZbYjRlUZWM1g7i4nF9ZO8KuFdpv_Y1w7ZJwIsm5CjRbwG0Mb5-c5tJpfV_MzYtgYGJshtX5cQIseUY1SJMtwGO7GgSAG1rgPHNra-xEP5lbgPTem6XJ-rBLfQZjoXt4c8RqtTb9N2eD6q4y");'></div>
+<div class="flex flex-col">
+<h1 class="text-white text-base font-bold leading-tight tracking-tight">Detrades Journal</h1>
+<p class="text-[#9d9db9] text-xs font-medium uppercase tracking-wide">Pro Trader Plan</p>
+</div>
+</div>
+<!-- Nav Links -->
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#9d9db9] hover:bg-[#1e1e2d] hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#9d9db9] group-hover:text-white" style="font-size: 24px;">dashboard</span>
+<p class="text-sm font-medium leading-normal">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#9d9db9] hover:bg-[#1e1e2d] hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#9d9db9] group-hover:text-white" style="font-size: 24px;">book</span>
+<p class="text-sm font-medium leading-normal">Journal</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#9d9db9] hover:bg-[#1e1e2d] hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#9d9db9] group-hover:text-white" style="font-size: 24px;">show_chart</span>
+<p class="text-sm font-medium leading-normal">Analytics</p>
+</a>
+<div class="my-2 border-b border-[#282839]"></div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined text-primary fill-1" style="font-size: 24px; font-variation-settings: 'FILL' 1;">settings</span>
+<p class="text-sm font-bold leading-normal">Settings</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#9d9db9] hover:bg-[#1e1e2d] hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#9d9db9] group-hover:text-white" style="font-size: 24px;">help</span>
+<p class="text-sm font-medium leading-normal">Help &amp; Support</p>
+</a>
+</nav>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#1e1e2d] cursor-pointer transition-colors border border-transparent hover:border-[#282839]">
+<span class="material-symbols-outlined text-[#9d9db9]" style="font-size: 24px;">logout</span>
+<p class="text-[#9d9db9] text-sm font-medium leading-normal">Sign Out</p>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col h-full overflow-hidden relative">
+<!-- Mobile Header (Visible only on small screens) -->
+<div class="md:hidden flex items-center justify-between p-4 bg-[#111118] border-b border-[#282839]">
+<div class="font-bold text-lg">Detrades</div>
+<button class="text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+<!-- Scrollable Content Area -->
+<div class="flex-1 overflow-y-auto p-4 md:p-10 scroll-smooth">
+<div class="max-w-4xl mx-auto flex flex-col gap-8 pb-20">
+<!-- Breadcrumbs -->
+<div class="flex items-center gap-2 text-sm">
+<a class="text-[#9d9db9] hover:text-white transition-colors" href="#">Home</a>
+<span class="text-[#555569] material-symbols-outlined" style="font-size: 16px;">chevron_right</span>
+<a class="text-[#9d9db9] hover:text-white transition-colors" href="#">Settings</a>
+<span class="text-[#555569] material-symbols-outlined" style="font-size: 16px;">chevron_right</span>
+<span class="text-white font-medium">Profile</span>
+</div>
+<!-- Header -->
+<div class="flex flex-col gap-2">
+<h1 class="text-white text-3xl md:text-4xl font-black tracking-tight">Settings</h1>
+<p class="text-[#9d9db9] text-base font-normal">Manage your profile, account security, and trading preferences.</p>
+</div>
+<!-- Navigation Tabs -->
+<div class="border-b border-[#282839]">
+<div class="flex gap-6 overflow-x-auto no-scrollbar">
+<button class="pb-3 border-b-2 border-primary text-white font-medium text-sm whitespace-nowrap px-1">Profile</button>
+<button class="pb-3 border-b-2 border-transparent text-[#9d9db9] hover:text-white font-medium text-sm whitespace-nowrap px-1 transition-colors">Account &amp; Security</button>
+<button class="pb-3 border-b-2 border-transparent text-[#9d9db9] hover:text-white font-medium text-sm whitespace-nowrap px-1 transition-colors">Notifications</button>
+<button class="pb-3 border-b-2 border-transparent text-[#9d9db9] hover:text-white font-medium text-sm whitespace-nowrap px-1 transition-colors">Trading Prefs</button>
+<button class="pb-3 border-b-2 border-transparent text-[#9d9db9] hover:text-white font-medium text-sm whitespace-nowrap px-1 transition-colors">Billing</button>
+</div>
+</div>
+<!-- Content Sections -->
+<div class="flex flex-col gap-8">
+<!-- Avatar Section -->
+<section class="bg-[#181825] border border-[#282839] rounded-xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+<div class="flex items-center gap-6">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-24 w-24 ring-4 ring-[#282839]" data-alt="User profile picture showing a calm landscape" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAdUAX4nLUlwX-q0kV6z7JtURqxTMcRnLH7z4Ou_7w-86g7rKH35dm2rHt_-ixGEBZIC5ipjedU9hpOY8Oqb2ZWU10t-gZ-FysZabKAM-LOo0LhlD4BC95o4UgAU1lluzKIVR7gLHsOQZxI4KPdUpDAUxHDCywgVCwQrp9v31pypEVW5eoiE5FsGR7aWPiozNnIcRd0MVy2uzi9V7__XWCW2JH9BX29PntwWrEELh2608jFdp-aPTzDgaVuG775XPRXY7M9ixkDAFg8");'></div>
+<div class="flex flex-col gap-1">
+<h3 class="text-white text-xl font-bold">Profile Picture</h3>
+<p class="text-[#9d9db9] text-sm max-w-sm">Upload a new avatar. Recommended size is 400x400px. Visible to your mentors.</p>
+</div>
+</div>
+<div class="flex gap-3 w-full md:w-auto">
+<button class="flex-1 md:flex-none items-center justify-center px-4 py-2.5 rounded-lg bg-[#282839] hover:bg-[#3b3b54] text-white text-sm font-semibold transition-colors border border-[#3b3b54]">
+                                    Remove
+                                </button>
+<button class="flex-1 md:flex-none items-center justify-center px-4 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-semibold transition-colors shadow-lg shadow-primary/25">
+                                    Change Avatar
+                                </button>
+</div>
+</section>
+<!-- Personal Info Form -->
+<section class="bg-[#181825] border border-[#282839] rounded-xl overflow-hidden">
+<div class="p-6 md:p-8 border-b border-[#282839]">
+<h3 class="text-white text-lg font-bold mb-1">Personal Information</h3>
+<p class="text-[#9d9db9] text-sm">Update your personal details here.</p>
+</div>
+<div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-white text-sm font-medium">Display Name</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#555569] text-[20px]">person</span>
+<input class="w-full bg-[#111118] border border-[#282839] text-white text-sm rounded-lg focus:ring-primary focus:border-primary block pl-10 p-2.5 placeholder-[#555569]" placeholder="Enter display name" type="text" value="TraderX"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-white text-sm font-medium">Full Name</label>
+<input class="w-full bg-[#111118] border border-[#282839] text-white text-sm rounded-lg focus:ring-primary focus:border-primary block p-2.5 placeholder-[#555569]" placeholder="Enter full name" type="text" value="Alex Smith"/>
+</div>
+<div class="flex flex-col gap-2 md:col-span-2">
+<label class="text-white text-sm font-medium">Email Address</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#555569] text-[20px]">mail</span>
+<input class="w-full bg-[#111118] border border-[#282839] text-white text-sm rounded-lg focus:ring-primary focus:border-primary block pl-10 p-2.5 placeholder-[#555569]" placeholder="name@company.com" type="email" value="alex.smith@example.com"/>
+</div>
+<p class="text-[#555569] text-xs">Note: Changing email requires verification.</p>
+</div>
+<div class="flex flex-col gap-2 md:col-span-2">
+<label class="text-white text-sm font-medium">Trader Bio</label>
+<textarea class="w-full bg-[#111118] border border-[#282839] text-white text-sm rounded-lg focus:ring-primary focus:border-primary block p-2.5 placeholder-[#555569] resize-none" placeholder="Share your trading philosophy and goals..." rows="4"></textarea>
+<div class="flex justify-between items-center">
+<p class="text-[#555569] text-xs">Brief description for your mentor.</p>
+<p class="text-[#555569] text-xs">0/300</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Preferences Form -->
+<section class="bg-[#181825] border border-[#282839] rounded-xl overflow-hidden">
+<div class="p-6 md:p-8 border-b border-[#282839]">
+<h3 class="text-white text-lg font-bold mb-1">Trading Preferences</h3>
+<p class="text-[#9d9db9] text-sm">Configure how you view and log your trades.</p>
+</div>
+<div class="p-6 md:p-8 flex flex-col gap-6">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-white text-sm font-medium">Default Currency</label>
+<select class="w-full bg-[#111118] border border-[#282839] text-white text-sm rounded-lg focus:ring-primary focus:border-primary block p-2.5">
+<option>USD ($)</option>
+<option>EUR (€)</option>
+<option>GBP (£)</option>
+<option>JPY (¥)</option>
+</select>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-white text-sm font-medium">Risk Per Trade (%)</label>
+<div class="relative">
+<input class="w-full bg-[#111118] border border-[#282839] text-white text-sm rounded-lg focus:ring-primary focus:border-primary block p-2.5 pr-8" step="0.1" type="number" value="1.5"/>
+<span class="absolute right-3 top-1/2 -translate-y-1/2 text-[#555569] text-sm font-bold">%</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-white text-sm font-medium">Timezone</label>
+<select class="w-full bg-[#111118] border border-[#282839] text-white text-sm rounded-lg focus:ring-primary focus:border-primary block p-2.5">
+<option>(GMT-05:00) Eastern Time</option>
+<option>(GMT+00:00) UTC</option>
+<option>(GMT+01:00) London</option>
+</select>
+</div>
+</div>
+<div class="border-t border-[#282839] my-2"></div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col gap-1">
+<h4 class="text-white text-sm font-bold">Mentor Visibility</h4>
+<p class="text-[#9d9db9] text-xs">Allow your assigned mentor to view your open positions in real-time.</p>
+</div>
+<label class="inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="relative w-11 h-6 bg-[#282839] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col gap-1">
+<h4 class="text-white text-sm font-bold">Show P&amp;L in Percentage</h4>
+<p class="text-[#9d9db9] text-xs">Toggle between absolute currency values and percentage growth.</p>
+</div>
+<label class="inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="relative w-11 h-6 bg-[#282839] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Danger Zone -->
+<section class="border border-red-900/50 bg-red-950/10 rounded-xl overflow-hidden mt-4">
+<div class="p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="flex flex-col gap-1">
+<h3 class="text-red-400 text-lg font-bold">Danger Zone</h3>
+<p class="text-red-200/60 text-sm">Once you delete your account, there is no going back. Please be certain.</p>
+</div>
+<button class="px-4 py-2.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/50 text-sm font-semibold transition-colors whitespace-nowrap">
+                                    Delete Account
+                                </button>
+</div>
+</section>
+</div>
+</div>
+</div>
+<!-- Sticky Action Footer -->
+<div class="sticky bottom-0 z-10 w-full bg-[#111118]/80 backdrop-blur-md border-t border-[#282839] p-4">
+<div class="max-w-4xl mx-auto flex justify-end items-center gap-4">
+<button class="px-6 py-2.5 rounded-lg text-[#9d9db9] hover:text-white font-medium text-sm transition-colors">
+                        Cancel
+                    </button>
+<button class="px-6 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-all shadow-lg shadow-primary/25 flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-size: 18px;">save</span>
+                        Save Changes
+                    </button>
+</div>
+</div>
+</main>
+</div>
+</body></html>

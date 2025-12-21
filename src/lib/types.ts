@@ -1,25 +1,16 @@
+// =====================================================
+// DETRADES TYPES - Simplified Schema
+// =====================================================
+
 // Database Enums matching Supabase schema
 export type UserRole = 'member' | 'mentor';
-export type SessionType = 'London' | 'New York';
-export type BiasType = 'Bullish' | 'Bearish';
-export type BiasDailyType = 'DNT' | 'DCM' | 'DFM' | 'DCC' | 'DRM';
-export type FrameworkType = 'IRL to ERL' | 'OPR' | 'OB to Liq' | 'ERL to IRL';
-export type ProfilingType = '6AM Reversal' | '6AM Continuation' | '10AM Reversal' | '10AM Continuation';
-export type EntryModelType =
-    | 'Entry Model 1 (DNT)'
-    | 'Entry Model 2 (DNT)'
-    | 'Entry Model 3 (DNT)'
-    | 'Entry Model 1 (DCM)'
-    | 'Entry Model 2 (DCM)';
-export type ResultType = 'Win' | 'Lose' | 'BE';
-export type MoodType = 'Calm' | 'Anxious' | 'Greedy' | 'Fear' | 'Bored' | 'Revenge';
-export type TradeStatus = 'submitted' | 'revision' | 'reviewed';
+export type ResultType = 'Win' | 'Lose';
+export type TradeStatus = 'submitted' | 'reviewed' | 'needs_improvement';
 
 // Database Interfaces
 export interface Profile {
     id: string;
-    email: string | null;
-    username: string | null;
+    username: string;
     full_name: string | null;
     avatar_url: string | null;
     role: UserRole;
@@ -32,34 +23,25 @@ export interface Trade {
     id: string;
     user_id: string;
     created_at: string;
+    updated_at?: string;
+
+    // Trade Details
     trade_date: string;
-    session: SessionType;
     pair: string;
-    bias: BiasType;
-    bias_daily: BiasDailyType;
-    framework: FrameworkType;
-    profiling: ProfilingType;
-    entry_model: EntryModelType;
     result: ResultType;
     rr: number;
-    mood: MoodType;
-    image_url: string | null;
+
+    // Analysis
+    profiling: string | null;
     description: string | null;
+    screenshot_url: string | null;
+
+    // Review System
     status: TradeStatus;
     mentor_score: number | null;
-    mentor_notes: string | null;
+    mentor_feedback: string | null;
     reviewed_by: string | null;
     reviewed_at: string | null;
-}
-
-export interface DailyRisk {
-    id: string;
-    user_id: string;
-    trade_date: string;
-    total_rr: number;
-    is_locked: boolean;
-    locked_at: string | null;
-    created_at: string;
 }
 
 // Trade with profile info (for lists)
@@ -70,18 +52,12 @@ export interface TradeWithProfile extends Trade {
 // Form Input Types
 export interface TradeFormInput {
     trade_date: string;
-    session: SessionType;
     pair: string;
-    bias: BiasType;
-    bias_daily: BiasDailyType;
-    framework: FrameworkType;
-    profiling: ProfilingType;
-    entry_model: EntryModelType;
     result: ResultType;
     rr: number;
-    mood: MoodType;
+    profiling?: string;
     description?: string;
-    image?: File;
+    screenshot?: File;
 }
 
 // Stats Types
@@ -92,7 +68,6 @@ export interface UserStats {
     avgSopScore: number;
     winStreak: number;
     currentDayR: number;
-    isLocked: boolean;
 }
 
 export interface TeamStats {
@@ -100,33 +75,57 @@ export interface TeamStats {
     activeToday: number;
     teamTotalR: number;
     teamWinRate: number;
-    lockedMembers: number;
     pendingReviews: number;
 }
 
-// Cascading dropdown helpers
-export const REVERSAL_ENTRY_MODELS: EntryModelType[] = [
-    'Entry Model 1 (DNT)',
-    'Entry Model 2 (DNT)',
-    'Entry Model 3 (DNT)',
+// =====================================================
+// PAIRS CONFIG - Grouped by Category
+// =====================================================
+export interface PairGroup {
+    label: string;
+    icon: string;
+    pairs: string[];
+}
+
+export const PAIR_GROUPS: PairGroup[] = [
+    {
+        label: 'Indices',
+        icon: '📊',
+        pairs: ['NASDAQ', 'S&P500', 'DOW'],
+    },
+    {
+        label: 'Commodities',
+        icon: '💰',
+        pairs: ['XAUUSD'],
+    },
+    {
+        label: 'Forex',
+        icon: '💱',
+        pairs: ['EURUSD', 'GBPUSD', 'USDJPY', 'AUDUSD', 'NZDUSD', 'USDCAD', 'USDCHF'],
+    },
 ];
 
-export const CONTINUATION_ENTRY_MODELS: EntryModelType[] = [
-    'Entry Model 1 (DCM)',
-    'Entry Model 2 (DCM)',
+// Flat list of all pairs for validation
+export const ALL_PAIRS = PAIR_GROUPS.flatMap(group => group.pairs);
+
+// =====================================================
+// PROFILING OPTIONS
+// =====================================================
+export const PROFILING_OPTIONS = [
+    '6AM Reversal',
+    '6AM Continuation',
+    '10AM Reversal',
+    '10AM Continuation',
+    'Other',
 ];
 
-export const isReversalProfiling = (profiling: ProfilingType): boolean => {
-    return profiling.includes('Reversal');
-};
-
-export const getAvailableEntryModels = (profiling: ProfilingType): EntryModelType[] => {
-    return isReversalProfiling(profiling) ? REVERSAL_ENTRY_MODELS : CONTINUATION_ENTRY_MODELS;
-};
-
-// Constants
-export const PAIRS = ['XAUUSD', 'NQ', 'ES', 'YM', 'EURUSD', 'GBPUSD', 'GBPJPY', 'USDJPY'];
-export const BIAS_DAILY_OPTIONS: BiasDailyType[] = ['DNT', 'DCM', 'DFM', 'DCC', 'DRM'];
-export const FRAMEWORKS: FrameworkType[] = ['IRL to ERL', 'OPR', 'OB to Liq', 'ERL to IRL'];
-export const PROFILINGS: ProfilingType[] = ['6AM Reversal', '6AM Continuation', '10AM Reversal', '10AM Continuation'];
-export const MOODS: MoodType[] = ['Calm', 'Anxious', 'Greedy', 'Fear', 'Bored', 'Revenge'];
+// =====================================================
+// CALENDAR TYPES
+// =====================================================
+export interface DailyPnL {
+    date: string;
+    totalR: number;
+    trades: number;
+    wins: number;
+    losses: number;
+}
