@@ -1,18 +1,29 @@
 -- =====================================================
--- DETRADES DATABASE SCHEMA - FRESH INSTALL
--- Run this after: DROP SCHEMA public CASCADE;
+-- DETRADES DATABASE SCHEMA - COMPLETE RESET
 -- =====================================================
+-- This script completely resets and rebuilds the database
+-- Run ALL of this in Supabase SQL Editor in one go
+-- =====================================================
+
+-- =====================================================
+-- STEP 1: DROP EVERYTHING (CLEAN SLATE)
+-- =====================================================
+-- WARNING: This deletes ALL data!
+DROP SCHEMA IF EXISTS public CASCADE;
 
 -- Recreate public schema
-CREATE SCHEMA IF NOT EXISTS public;
+CREATE SCHEMA public;
 GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO public;
+GRANT ALL ON SCHEMA public TO anon;
+GRANT ALL ON SCHEMA public TO authenticated;
+GRANT ALL ON SCHEMA public TO service_role;
 
 -- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 
 -- =====================================================
--- PROFILES TABLE
+-- STEP 2: PROFILES TABLE
 -- =====================================================
 CREATE TABLE public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -42,7 +53,7 @@ CREATE POLICY "Users can insert own profile"
     WITH CHECK (auth.uid() = id);
 
 -- =====================================================
--- TRADES TABLE
+-- STEP 3: TRADES TABLE
 -- =====================================================
 CREATE TABLE public.trades (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -101,7 +112,7 @@ CREATE POLICY "Users can delete own trades"
     USING (auth.uid() = user_id);
 
 -- =====================================================
--- INDEXES FOR PERFORMANCE
+-- STEP 4: INDEXES FOR PERFORMANCE
 -- =====================================================
 CREATE INDEX idx_trades_user_id ON public.trades(user_id);
 CREATE INDEX idx_trades_trade_date ON public.trades(trade_date);
@@ -111,7 +122,7 @@ CREATE INDEX idx_profiles_role ON public.profiles(role);
 CREATE INDEX idx_profiles_is_active ON public.profiles(is_active);
 
 -- =====================================================
--- TRIGGERS FOR UPDATED_AT
+-- STEP 5: TRIGGERS FOR UPDATED_AT
 -- =====================================================
 CREATE OR REPLACE FUNCTION public.handle_updated_at()
 RETURNS TRIGGER AS $$
@@ -130,7 +141,7 @@ CREATE TRIGGER trades_updated_at
     FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 -- =====================================================
--- FUNCTION: Auto-create profile on signup
+-- STEP 6: AUTO-CREATE PROFILE ON SIGNUP
 -- =====================================================
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
@@ -152,19 +163,57 @@ CREATE TRIGGER on_auth_user_created
     FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- =====================================================
--- STORAGE BUCKET FOR TRADE SCREENSHOTS
+-- STEP 7: STORAGE BUCKET FOR TRADE SCREENSHOTS
 -- =====================================================
--- Run this in Supabase SQL Editor separately if needed:
--- INSERT INTO storage.buckets (id, name, public) 
--- VALUES ('trade-screenshots', 'trade-screenshots', true);
+-- Delete bucket if exists (ignore error if not exists)
+DELETE FROM storage.objects WHERE bucket_id = 'trade-screenshots';
+DELETE FROM storage.buckets WHERE id = 'trade-screenshots';
 
--- Storage Policies (run in Supabase Dashboard > Storage > Policies)
--- 1. Allow authenticated users to upload
--- 2. Allow public read access
+-- Create the bucket (public = viewable by anyone)
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+    'trade-screenshots', 
+    'trade-screenshots', 
+    true,
+    5242880,  -- 5MB limit
+    ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+);
 
 -- =====================================================
--- SAMPLE DATA (OPTIONAL - for testing)
+-- STEP 8: STORAGE POLICIES
 -- =====================================================
--- Uncomment below to create a test mentor account
--- Note: You need to sign up a user first via the app, then run:
--- UPDATE public.profiles SET role = 'mentor' WHERE username = 'your_username';
+-- Anyone can view screenshots (public bucket)
+CREATE POLICY "Trade screenshots are publicly accessible"
+    ON storage.objects FOR SELECT
+    USING (bucket_id = 'trade-screenshots');
+
+-- Authenticated users can upload
+CREATE POLICY "Authenticated users can upload screenshots"
+    ON storage.objects FOR INSERT
+    TO authenticated
+    WITH CHECK (bucket_id = 'trade-screenshots');
+
+-- Users can update their own screenshots
+CREATE POLICY "Users can update own screenshots"
+    ON storage.objects FOR UPDATE
+    TO authenticated
+    USING (bucket_id = 'trade-screenshots' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+-- Users can delete their own screenshots
+CREATE POLICY "Users can delete own screenshots"
+    ON storage.objects FOR DELETE
+    TO authenticated
+    USING (bucket_id = 'trade-screenshots' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+-- =====================================================
+-- STEP 9: GRANT PERMISSIONS
+-- =====================================================
+GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated, service_role;
+
+-- =====================================================
+-- DONE! Now create your first user via the app, then:
+-- UPDATE public.profiles SET role = 'mentor' WHERE username = 'YOUR_USERNAME';
+-- =====================================================
